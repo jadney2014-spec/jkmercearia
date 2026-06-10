@@ -1,15 +1,12 @@
 // Tipos para sistema de roles e permissões
 
-export type UserRole = 'membro' | 'lider' | 'admin' | 'secretaria' | 'tesouraria' | 'midia';
+export type UserRole = 'admin' | 'vendedor' | 'membro' | 'lider' | 'secretaria' | 'tesouraria' | 'midia';
 
 export interface UserProfile {
   id: string;
   email: string;
   name: string;
   role: UserRole;
-  financeiro_access?: boolean;
-  ministerio_id?: string; // ID do ministério (para líderes)
-  ministerio_nome?: string; // Nome do ministério (para líderes)
   phone?: string;
   photoURL?: string;
   createdAt?: Date | string;
@@ -105,6 +102,20 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   tesouraria: [
     {
       resource: 'financeiro',
+      actions: ['read', 'write']
+    },
+    {
+      resource: 'relatorios',
+      actions: ['read']
+    }
+  ],
+  vendedor: [
+    {
+      resource: 'vendas',
+      actions: ['read', 'write']
+    },
+    {
+      resource: 'produtos',
       actions: ['read', 'write']
     },
     {

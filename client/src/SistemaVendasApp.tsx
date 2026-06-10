@@ -23,7 +23,7 @@ const AdminsAdmin = lazyWithRetry(() => import('./pages/AdminsAdmin'));
 
 function SistemaVendasApp() {
   const { user, loading } = useAuth();
-  const { role, loading: roleLoading, isAdmin, isTesouraria } = useUserRole();
+  const { role, loading: roleLoading, isAdmin, isTesouraria, isVendedor } = useUserRole();
 
   useCacheInvalidation();
 
@@ -64,7 +64,7 @@ function SistemaVendasApp() {
     );
   }
 
-  const canSell = isAdmin || isTesouraria || role === 'membro' || role === 'lider' || role === 'secretaria';
+  const canSell = isAdmin || isTesouraria || isVendedor;
 
   const RoleProtectedRoute: React.FC<{ allow: string[]; children: React.ReactNode }> = ({
     allow,
@@ -93,7 +93,7 @@ function SistemaVendasApp() {
               <Route
                 path="dashboard"
                 element={
-                  <RoleProtectedRoute allow={['admin', 'tesouraria', 'lider', 'secretaria', 'membro']}>
+                  <RoleProtectedRoute allow={['admin', 'vendedor', 'tesouraria']}>
                     <Dashboard />
                   </RoleProtectedRoute>
                 }
@@ -102,7 +102,7 @@ function SistemaVendasApp() {
               <Route
                 path="vendas"
                 element={
-                  <RoleProtectedRoute allow={['admin', 'tesouraria', 'lider', 'secretaria', 'membro']}>
+                  <RoleProtectedRoute allow={['admin', 'vendedor', 'tesouraria']}>
                     <Vendas />
                   </RoleProtectedRoute>
                 }
@@ -111,7 +111,7 @@ function SistemaVendasApp() {
               <Route
                 path="products"
                 element={
-                  <RoleProtectedRoute allow={['admin', 'tesouraria']}>
+                  <RoleProtectedRoute allow={['admin', 'vendedor', 'tesouraria']}>
                     <Products />
                   </RoleProtectedRoute>
                 }
@@ -120,7 +120,7 @@ function SistemaVendasApp() {
               <Route
                 path="reports"
                 element={
-                  <RoleProtectedRoute allow={['admin', 'tesouraria', 'lider']}>
+                  <RoleProtectedRoute allow={['admin', 'vendedor', 'tesouraria']}>
                     <Reports />
                   </RoleProtectedRoute>
                 }

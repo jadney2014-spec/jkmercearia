@@ -1,8 +1,7 @@
-// Hook para gerenciar roles e permissões do usuário
 import { useState, useEffect } from 'react';
 import { useAuth } from '../firebase/AuthContext';
 import { db } from '../firebase/config';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, setDoc, limit, query } from 'firebase/firestore';
 import type { UserRole, UserProfile } from '../types/Role';
 
 interface UseUserRoleReturn {
@@ -14,8 +13,9 @@ interface UseUserRoleReturn {
   isMembro: boolean;
   isSecretaria: boolean;
   isTesouraria: boolean;
+  isVendedor: boolean;
   isMidia: boolean;
-  updateRole: (newRole: UserRole, ministerioId?: string) => Promise<void>;
+  updateRole: (newRole: UserRole) => Promise<void>;
 }
 
 export const useUserRole = (): UseUserRoleReturn => {
@@ -47,43 +47,41 @@ export const useUserRole = (): UseUserRoleReturn => {
             id: profileSnap.id,
             email: data.email || user.email || '',
             name: data.name || user.displayName || '',
-            role: data.role || 'membro',
-            financeiro_access: !!data.financeiro_access,
-            ministerio_id: data.ministerio_id,
-            ministerio_nome: data.ministerio_nome,
+            role: data.role || 'vendedor',
             phone: data.phone,
             photoURL: data.photoURL || user.photoURL,
             createdAt: data.createdAt?.toDate?.() || data.createdAt,
             updatedAt: data.updatedAt?.toDate?.() || data.updatedAt,
           });
         } else {
-          // Criar perfil padrão se não existir
+          const profilesQuery = query(collection(db, 'user_profiles'), limit(1));
+          const existingProfiles = await getDocs(profilesQuery);
+          const isFirstUser = existingProfiles.empty;
+
           const defaultProfile: UserProfile = {
             id: user.uid,
             email: user.email || '',
-            name: user.displayName || '',
-            role: 'membro',
-            financeiro_access: false,
+            name: user.displayName || user.email?.split('@')[0] || 'Usuário',
+            role: isFirstUser ? 'admin' : 'vendedor',
             createdAt: new Date(),
             updatedAt: new Date(),
           };
-          
+
           await setDoc(profileRef, {
             ...defaultProfile,
             createdAt: new Date(),
             updatedAt: new Date(),
           });
-          
+
           setProfile(defaultProfile);
         }
       } catch (error) {
         console.error('Erro ao carregar perfil do usuário:', error);
-        // Perfil padrão em caso de erro
         setProfile({
           id: user.uid,
           email: user.email || '',
           name: user.displayName || '',
-          role: 'membro',
+          role: 'vendedor',
         });
       } finally {
         setLoading(false);
@@ -93,34 +91,16 @@ export const useUserRole = (): UseUserRoleReturn => {
     loadUserProfile();
   }, [authReady, user]);
 
-  const updateRole = async (newRole: UserRole, ministerioId?: string) => {
+  const updateRole = async (newRole: UserRole) => {
     if (!user) return;
 
-    try {
-      const profileRef = doc(db, 'user_profiles', user.uid);
-      const updateData: any = {
-        role: newRole,
-        updatedAt: new Date(),
-      };
+    const profileRef = doc(db, 'user_profiles', user.uid);
+    await setDoc(profileRef, { role: newRole, updatedAt: new Date() }, { merge: true });
 
-      if (ministerioId) {
-        updateData.ministerio_id = ministerioId;
-      }
-
-      await setDoc(profileRef, updateData, { merge: true });
-      
-      setProfile(prev => prev ? {
-        ...prev,
-        role: newRole,
-        ministerio_id: ministerioId,
-      } : null);
-    } catch (error) {
-      console.error('Erro ao atualizar role:', error);
-      throw error;
-    }
+    setProfile((prev) => (prev ? { ...prev, role: newRole } : null));
   };
 
-  const role = profile?.role || 'membro';
+  const role = profile?.role || 'vendedor';
 
   return {
     role,
@@ -130,7 +110,8 @@ export const useUserRole = (): UseUserRoleReturn => {
     isLider: role === 'lider',
     isMembro: role === 'membro',
     isSecretaria: role === 'secretaria',
-    isTesouraria: role === 'tesouraria',
+    isTesouraria: role === 'tesouraria' || role === 'vendedor',
+    isVendedor: role === 'vendedor' || role === 'tesouraria',
     isMidia: role === 'midia',
     updateRole,
   };

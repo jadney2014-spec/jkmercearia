@@ -41,12 +41,12 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, logout } = useAuth();
-  const { isAdmin, isTesouraria } = useUserRole();
+  const { isAdmin, isTesouraria, isVendedor } = useUserRole();
   const location = useLocation();
 
   usePreloadComponents();
 
-  const canManage = isAdmin || isTesouraria;
+  const canManage = isAdmin || isTesouraria || isVendedor;
 
   const navigation: NavItem[] = [
     { type: 'link', name: 'Início', href: appPath('welcome'), icon: HomeIcon },

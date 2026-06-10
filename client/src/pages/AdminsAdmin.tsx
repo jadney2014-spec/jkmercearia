@@ -5,12 +5,14 @@ import { toast } from 'react-toastify';
 import { db } from '../firebase/config';
 import { useUserRole } from '../hooks/useUserRole';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { appPath } from '../constants/app';
+import type { UserRole } from '../types/Role';
 
 type UserRow = {
   id: string;
   name: string;
   email: string;
-  role: 'membro' | 'lider' | 'admin' | 'secretaria' | 'tesouraria' | 'midia' | string;
+  role: UserRole | string;
 };
 
 export default function AdminsAdmin() {
@@ -27,7 +29,7 @@ export default function AdminsAdmin() {
   useEffect(() => {
     if (roleLoading) return;
     if (!isAdmin) {
-      navigate('/tesouraria/members', { replace: true });
+      navigate(appPath('welcome'), { replace: true });
       return;
     }
 
@@ -66,7 +68,7 @@ export default function AdminsAdmin() {
 
   const adminCount = useMemo(() => users.filter((u) => u.role === 'admin').length, [users]);
 
-  const setUserRole = async (userId: string, newRole: 'membro' | 'lider' | 'admin' | 'secretaria' | 'tesouraria' | 'midia') => {
+  const setUserRole = async (userId: string, newRole: UserRole) => {
     setSavingIds((p) => ({ ...p, [userId]: true }));
     try {
       const current = users.find((u) => u.id === userId);
@@ -103,9 +105,9 @@ export default function AdminsAdmin() {
     <div className="space-y-6">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Administradores</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Usuários do Sistema</h1>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Gerencie quem é administrador. Por segurança, não é permitido remover o último admin.
+            Gerencie permissões de acesso. Novos usuários se cadastram pela tela de login.
           </p>
         </div>
 
@@ -158,12 +160,8 @@ export default function AdminsAdmin() {
                           onChange={(e) => setUserRole(u.id, e.target.value as any)}
                           className="px-2 py-1 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-sm"
                         >
-                          <option value="membro">membro</option>
-                          <option value="lider">lider</option>
-                          <option value="secretaria">secretaria</option>
-                          <option value="tesouraria">tesouraria</option>
-                          <option value="midia">midia</option>
-                          <option value="admin">admin</option>
+                          <option value="vendedor">Vendedor</option>
+                          <option value="admin">Administrador</option>
                         </select>
                         {isRowLastAdmin && (
                           <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -175,7 +173,7 @@ export default function AdminsAdmin() {
                         <button
                           className="text-sm font-medium text-primary-600 dark:text-primary-400 disabled:opacity-50"
                           disabled={saving}
-                          onClick={() => setUserRole(u.id, u.role === 'admin' ? 'membro' : 'admin')}
+                          onClick={() => setUserRole(u.id, u.role === 'admin' ? 'vendedor' : 'admin')}
                         >
                           {u.role === 'admin' ? 'Remover admin' : 'Tornar admin'}
                         </button>

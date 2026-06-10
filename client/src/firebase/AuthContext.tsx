@@ -105,12 +105,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await signOut(auth);
       console.log('âœ… Logout Firebase realizado com sucesso');
       
-      // Limpar dados locais
       storage.remove('token');
       sessionStorage.clear();
-      
-      // Redirecionar para página de logout
-      window.location.href = '/logout';
+      window.location.href = '/sistema-vendas/login';
     } catch (error: any) {
       console.error('âŒ Erro no logout Firebase:', error);
       throw new Error('Erro ao fazer logout');
