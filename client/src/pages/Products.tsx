@@ -38,7 +38,7 @@ const Products: React.FC = () => {
         categoriesAPI.getCategories(),
       ]);
       setProducts(prods);
-      const cats = catsRes?.data?.categories || catsRes?.categories || [];
+      const cats = catsRes?.data?.categories || [];
       setCategories(cats.map((c: any) => ({ id: String(c.id), name: c.name })));
     } catch {
       toast.error('Erro ao carregar produtos');

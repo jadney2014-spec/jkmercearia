@@ -24,13 +24,13 @@ if (missingConfig.length > 0) {
   // Observação: Firebase config NÃO é segredo. Em produção no Firebase Hosting,
   // variáveis REACT_APP_* precisam estar embutidas no build. Se não estiverem,
   // usamos fallback para evitar tela branca.
-  firebaseConfig.apiKey = firebaseConfig.apiKey || 'AIzaSyDW73K6vb7RMdyfsJ6JVzzm1r3sULs4ceY';
-  firebaseConfig.authDomain = firebaseConfig.authDomain || 'comunidaderesgate-82655.firebaseapp.com';
-  firebaseConfig.projectId = firebaseConfig.projectId || 'comunidaderesgate-82655';
-  firebaseConfig.storageBucket = firebaseConfig.storageBucket || 'comunidaderesgate-82655.appspot.com';
-  firebaseConfig.messagingSenderId = firebaseConfig.messagingSenderId || '587928941365';
-  firebaseConfig.appId = firebaseConfig.appId || '1:587928941365:web:b788b8c9acf0a20992d27c';
-  firebaseConfig.measurementId = firebaseConfig.measurementId || 'G-485FKRFYHE';
+  firebaseConfig.apiKey = firebaseConfig.apiKey || 'AIzaSyD2RFc4wCVXzqDbIl7WXMK_FubRVQO2rDg';
+  firebaseConfig.authDomain = firebaseConfig.authDomain || 'jkmercearia-2865.firebaseapp.com';
+  firebaseConfig.projectId = firebaseConfig.projectId || 'jkmercearia-2865';
+  firebaseConfig.storageBucket = firebaseConfig.storageBucket || 'jkmercearia-2865.firebasestorage.app';
+  firebaseConfig.messagingSenderId = firebaseConfig.messagingSenderId || '970845795439';
+  firebaseConfig.appId = firebaseConfig.appId || '1:970845795439:web:843b2ea2dba4658e0a499a';
+  firebaseConfig.measurementId = firebaseConfig.measurementId || 'G-3620M9D94M';
   missingConfig = requiredConfig.filter(key => !firebaseConfig[key]);
 
   if (process.env.NODE_ENV === 'development') {
