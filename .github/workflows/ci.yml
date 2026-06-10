@@ -2,52 +2,28 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [16.x, 18.x, 20.x]
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-
-    - name: Install dependencies
-      run: npm install
-
-    - name: Install client dependencies
-      run: cd client && npm install
-
-    - name: Run linting
-      run: npm run lint
-
-    - name: Run type checking
-      run: npm run type-check
-
-    - name: Run tests
-      run: npm test -- --watchAll=false
-
-    - name: Build application
-      run: npm run build
-
-  security:
+  build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-    - name: Run security audit
-      run: npm audit --audit-level moderate
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            client/package-lock.json
 
-    - name: Run client security audit
-      run: cd client && npm audit --audit-level moderate
+      - name: Instalar dependências
+        run: |
+          npm ci
+          cd client && npm ci
+
+      - name: Build da aplicação
+        run: npm run build

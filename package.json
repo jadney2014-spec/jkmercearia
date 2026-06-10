@@ -4,7 +4,12 @@
   "description": "Sistema de contabilidade para igreja",
   "private": true,
   "scripts": {
+    "install:all": "npm install && cd client && npm install",
+    "setup": "powershell -NoProfile -ExecutionPolicy Bypass -File ./setup.ps1",
     "build": "cd client && npm run build",
+    "deploy:hosting": "firebase deploy --only hosting --project jkmercearia-2865",
+    "automate": "powershell -NoProfile -ExecutionPolicy Bypass -File ./automate-all.ps1",
+    "release": "powershell -NoProfile -ExecutionPolicy Bypass -File ./automate-all.ps1",
     "start": "cd client && npm start",
     "dev": "cd client && npm start",
     "normalize:utf8": "node scripts/normalize-utf8.js",

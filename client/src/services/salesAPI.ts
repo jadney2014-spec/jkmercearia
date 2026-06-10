@@ -20,6 +20,7 @@ export interface Product {
   id: string;
   name: string;
   price: number;
+  purchase_price: number;
   stock: number;
   category_id?: string;
   category_name?: string;
@@ -70,6 +71,7 @@ export const productsAPI = {
             id: d.id,
             name: data.name || '',
             price: Number(data.price) || 0,
+            purchase_price: Number(data.purchase_price) || 0,
             stock: Number(data.stock) || 0,
             category_id: data.category_id || '',
             category_name: data.category_id ? categories[data.category_id] || '' : '',

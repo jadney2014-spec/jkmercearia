@@ -1,0 +1,13 @@
+{
+  "name": "jk-mercearia-scripts",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Utility scripts for JK Mercearia",
+  "scripts": {
+    "parse-excel": "node parse-excel.js",
+    "parse": "node parse-excel-standalone.js"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  }
+}
