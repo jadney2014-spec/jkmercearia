@@ -1,0 +1,63 @@
+connectorId: example
+generate:
+  javascriptSdk:
+    - outputDir: ..\..\src\dataconnect-generated
+      package: "@dataconnect/generated"
+      packageJsonDir: ..\..
+      react: false
+      angular: false
+    - outputDir: ..\..\teste\src\dataconnect-generated
+      package: "@dataconnect/generated"
+      packageJsonDir: ..\..\teste
+      react: false
+      angular: false
+    - outputDir: ..\..\sim\src\dataconnect-generated
+      package: "@dataconnect/generated"
+      packageJsonDir: ..\..\sim
+      react: false
+      angular: false
+    - outputDir: ..\..\server\src\dataconnect-generated
+      package: "@dataconnect/generated"
+      packageJsonDir: ..\..\server
+      react: false
+      angular: false
+    - outputDir: ..\..\functions\src\dataconnect-generated
+      package: "@dataconnect/generated"
+      packageJsonDir: ..\..\functions
+      react: false
+      angular: false
+    - outputDir: ..\..\client\src\dataconnect-generated
+      package: "@dataconnect/generated"
+      packageJsonDir: ..\..\client
+      react: true
+      angular: false
+    - outputDir: ..\..\contabilidade\src\dataconnect-generated
+      package: "@dataconnect/generated"
+      packageJsonDir: ..\..\contabilidade
+      react: false
+      angular: false
+    - outputDir: ..\..\netlify\functions\src\dataconnect-generated
+      package: "@dataconnect/generated"
+      packageJsonDir: ..\..\netlify\functions
+      react: false
+      angular: false
+    - outputDir: ..\..\contabilidade\server\src\dataconnect-generated
+      package: "@dataconnect/generated"
+      packageJsonDir: ..\..\contabilidade\server
+      react: false
+      angular: false
+    - outputDir: ..\..\contabilidade\functions\src\dataconnect-generated
+      package: "@dataconnect/generated"
+      packageJsonDir: ..\..\contabilidade\functions
+      react: false
+      angular: false
+    - outputDir: ..\..\contabilidade\client\src\dataconnect-generated
+      package: "@dataconnect/generated"
+      packageJsonDir: ..\..\contabilidade\client
+      react: true
+      angular: false
+    - outputDir: ..\..\contabilidade\netlify\functions\src\dataconnect-generated
+      package: "@dataconnect/generated"
+      packageJsonDir: ..\..\contabilidade\netlify\functions
+      react: false
+      angular: false

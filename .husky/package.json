@@ -1,0 +1,23 @@
+{
+  "name": "husky",
+  "version": "8.0.3",
+  "description": "Git hooks made easy",
+  "bin": {
+    "husky": "./bin/husky.js"
+  },
+  "scripts": {
+    "install": "node install.mjs",
+    "uninstall": "node uninstall.mjs"
+  },
+  "keywords": [
+    "git",
+    "hooks",
+    "pre-commit",
+    "commit-msg"
+  ],
+  "author": "Typicode <typicode@gmail.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

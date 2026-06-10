@@ -1,0 +1,36 @@
+{
+  "version": 2,
+  "buildCommand": "cd client && npm run build:production",
+  "outputDirectory": "client/build",
+  "installCommand": "cd client && npm install",
+  "framework": "create-react-app",
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/tesouraria/(.*)",
+      "dest": "/tesouraria/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "env": {
+    "REACT_APP_API_URL": "@api_url",
+    "REACT_APP_FIREBASE_API_KEY": "@firebase_api_key",
+    "REACT_APP_FIREBASE_AUTH_DOMAIN": "@firebase_auth_domain",
+    "REACT_APP_FIREBASE_PROJECT_ID": "@firebase_project_id",
+    "REACT_APP_FIREBASE_STORAGE_BUCKET": "@firebase_storage_bucket",
+    "REACT_APP_FIREBASE_MESSAGING_SENDER_ID": "@firebase_messaging_sender_id",
+    "REACT_APP_FIREBASE_APP_ID": "@firebase_app_id",
+    "REACT_APP_FIREBASE_MEASUREMENT_ID": "@firebase_measurement_id"
+  },
+  "functions": {
+    "client/build/static/js/*.js": {
+      "maxDuration": 30
+    }
+  }
+}

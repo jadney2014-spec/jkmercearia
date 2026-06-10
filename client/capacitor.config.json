@@ -1,0 +1,71 @@
+{
+  "appId": "com.comunidaderesgate.contabilidade",
+  "appName": "Resgate",
+  "webDir": "build",
+  "bundledWebRuntime": false,
+  "server": {
+    "cleartext": false,
+    "allowNavigation": [
+      "https://*.firebaseapp.com",
+      "https://*.googleapis.com",
+      "https://*.firebaseio.com"
+    ]
+  },
+  "android": {
+    "buildOptions": {
+      "keystorePath": "android.keystore",
+      "keystoreAlias": "resgate-contabilidade",
+      "keystorePassword": "",
+      "keystoreAliasPassword": ""
+    },
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false,
+    "minVersion": "24",
+    "targetVersion": "33",
+    "permissions": [
+      "INTERNET",
+      "NETWORK_STATE",
+      "CAMERA",
+      "READ_EXTERNAL_STORAGE",
+      "WRITE_EXTERNAL_STORAGE"
+    ]
+  },
+  "ios": {
+    "scheme": "Resgate",
+    "bundleIdentifier": "com.comunidaderesgate.contabilidade",
+    "minimumVersion": "13.0",
+    "targetVersion": "17.0",
+    "permissions": {
+      "camera": "Precisamos acessar sua câmera para fotos de perfil e documentos",
+      "photos": "Precisamos acessar suas fotos para documentos e comprovantes"
+    }
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1800,
+      "backgroundColor": "#1e40af",
+      "showSpinner": false,
+      "spinnerColor": "#ffffff",
+      "splashFullScreen": true,
+      "splashImmersive": true
+    },
+    "StatusBar": {
+      "style": "LIGHT",
+      "backgroundColor": "#1e40af"
+    },
+    "App": {
+      "appendUserAgent": "Resgate/1.0"
+    },
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    },
+    "Camera": {
+      "permissions": ["camera", "photos"]
+    },
+    "Filesystem": {
+      "permissions": ["readExternalStorage", "writeExternalStorage"]
+    }
+  },
+  "loggingBehavior": "debug"
+}

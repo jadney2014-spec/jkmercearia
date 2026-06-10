@@ -1,0 +1,105 @@
+/* Custom styles for react-big-calendar */
+
+/* General styles */
+.rbc-calendar {
+  border-radius: 0.75rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* Header */
+.rbc-toolbar {
+  background-color: var(--header-bg-color);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.75rem 1rem;
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0.75rem;
+}
+
+.rbc-toolbar .rbc-toolbar-label {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.rbc-btn-group button {
+  background-color: var(--button-bg-color);
+  color: var(--button-text-color);
+  border: 1px solid var(--button-border-color);
+  transition: background-color 0.2s;
+}
+
+.rbc-btn-group button:hover {
+  background-color: var(--button-hover-bg-color);
+}
+
+.rbc-btn-group button.rbc-active {
+  background-color: var(--button-active-bg-color);
+  color: var(--button-active-text-color);
+}
+
+/* Month view */
+.rbc-month-view {
+  border: none;
+}
+
+.rbc-header {
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.5rem 0;
+  text-align: center;
+  font-weight: 600;
+}
+
+.rbc-day-bg {
+  border-left: 1px solid var(--border-color);
+}
+
+.rbc-day-bg:first-child {
+  border-left: none;
+}
+
+.rbc-today {
+  background-color: var(--today-bg-color);
+}
+
+/* Events */
+.rbc-event {
+  background-color: var(--event-bg-color);
+  color: var(--event-text-color);
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  border: none;
+}
+
+/* Theme variables */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #1a1a1a;
+  --border-color: #e0e0e0;
+  --header-bg-color: #f4f4f4;
+  --button-bg-color: #ffffff;
+  --button-text-color: #1a1a1a;
+  --button-border-color: #e0e0e0;
+  --button-hover-bg-color: #f4f4f4;
+  --button-active-bg-color: #4a90e2;
+  --button-active-text-color: #ffffff;
+  --today-bg-color: #f4f4f4;
+  --event-bg-color: #4a90e2;
+  --event-text-color: #ffffff;
+}
+
+.dark {
+  --bg-color: #0f172a;
+  --text-color: #f1f5f9;
+  --border-color: #334155;
+  --header-bg-color: #1e293b;
+  --button-bg-color: #0f172a;
+  --button-text-color: #f1f5f9;
+  --button-border-color: #334155;
+  --button-hover-bg-color: #1e293b;
+  --button-active-bg-color: #3b82f6;
+  --button-active-text-color: #ffffff;
+  --today-bg-color: #1e293b;
+  --event-bg-color: #3b82f6;
+  --event-text-color: #ffffff;
+}

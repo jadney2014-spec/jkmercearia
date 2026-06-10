@@ -1,0 +1,32 @@
+{
+  "appId": "com.comunidaderesgate.app",
+  "appName": "Comunidade Cristã Resgate",
+  "webDir": "build",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "https://comunidaderesgate-82655.web.app",
+    "cleartext": false,
+    "allowNavigation": [
+      "https://comunidaderesgate-82655.web.app",
+      "https://*.firebaseapp.com",
+      "https://*.googleapis.com"
+    ]
+  },
+  "android": {
+    "buildOptions": {
+      "keystorePath": "",
+      "keystoreAlias": ""
+    },
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#ffffff",
+      "showSpinner": true,
+      "spinnerColor": "#000000"
+    }
+  }
+}

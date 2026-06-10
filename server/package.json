@@ -1,0 +1,26 @@
+{
+  "name": "contabilidade-backend",
+  "version": "1.0.0",
+  "description": "Backend do sistema de contabilidade para igreja",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js",
+    "build": "echo 'No build step required'",
+    "test": "echo 'No tests specified'"
+  },
+  "dependencies": {
+    "@dataconnect/generated": "file:src/dataconnect-generated",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "sqlite3": "^5.1.6"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

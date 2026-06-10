@@ -1,0 +1,27 @@
+{
+  "name": "igreja-contabilidade",
+  "version": "1.0.0",
+  "description": "Sistema de contabilidade para igreja",
+  "private": true,
+  "scripts": {
+    "build": "cd client && npm run build",
+    "start": "cd client && npm start",
+    "dev": "cd client && npm start",
+    "normalize:utf8": "node scripts/normalize-utf8.js",
+    "setup-db": "node server/setup-database.js",
+    "server": "node server/index.js"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "@dataconnect/generated": "file:src/dataconnect-generated",
+    "firebase": "^12.3.0",
+    "firebase-admin": "^13.5.0",
+    "firebase-functions": "^6.4.0",
+    "next": "^16.0.8",
+    "onesignal-cordova-plugin": "^5.2.19",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1"
+  }
+}

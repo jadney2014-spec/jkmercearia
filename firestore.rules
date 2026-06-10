@@ -1,0 +1,43 @@
+rules_version='2'
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/user_profiles/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Biblioteca Digital: leitura pública para exibir no site/app
+    match /biblioteca_livros/{docId} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
+    // Devocional Diário
+    match /devotionals/{devotionalId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Perfis de usuário (roles)
+    match /user_profiles/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+    }
+
+    // Leads públicos para célula (Conecte-se)
+    match /cell_group_leads/{leadId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Apenas usuários autenticados podem acessar o restante do banco
+    match /{document=**} {
+      allow read, write: if isSignedIn();
+    }
+  }
+}

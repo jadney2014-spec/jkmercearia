@@ -1,0 +1,1 @@
+{"version":3,"file":"birthdayConfig.js","sourceRoot":"","sources":["../../src/config/birthdayConfig.ts"],"names":[],"mappings":";;;AAQa,QAAA,aAAa,GAAmB;IAC3C,gBAAgB,EAAE,OAAO;IACzB,cAAc,EAAE,OAAO,CAAC,GAAG,CAAC,cAAc,IAAI,uBAAuB;IACrE,iBAAiB,EAAE,OAAO,CAAC,GAAG,CAAC,iBAAiB,IAAI,EAAE;IACtD,QAAQ,EAAE,mBAAmB;IAC7B,qBAAqB,EAAE,CAAC,CAAC,UAAU;CACpC,CAAC"}

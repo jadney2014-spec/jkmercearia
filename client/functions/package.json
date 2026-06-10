@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "igreja-contabilidade-frontend": "file:.."
+  }
+}

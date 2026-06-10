@@ -1,0 +1,12 @@
+# Configuração adicional para Netlify
+# Este arquivo garante que todas as rotas sejam redirecionadas para index.html
+
+# Redirecionamento para SPA
+/*    /index.html   200
+
+# Headers de segurança
+/*
+  X-Frame-Options: DENY
+  X-XSS-Protection: 1; mode=block
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

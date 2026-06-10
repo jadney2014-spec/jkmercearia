@@ -1,0 +1,56 @@
+// Script de limpeza de cache para resolver problemas de chunks antigos
+// Adicione este código antes do fechamento da tag </body> no index.html
+
+<script>
+// Função para limpar cache e service workers antigos
+function clearOldCache() {
+  // Limpar todos os caches
+  if ('caches' in window) {
+    caches.keys().then(function(names) {
+      names.forEach(function(name) {
+        caches.delete(name);
+        console.log('Cache deletado:', name);
+      });
+    });
+  }
+
+  // Desregistrar service workers antigos
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+      registrations.forEach(function(registration) {
+        registration.unregister();
+        console.log('Service Worker desregistrado:', registration);
+      });
+    });
+  }
+
+  // Limpar localStorage e sessionStorage se necessário
+  try {
+    localStorage.removeItem('app-cache-version');
+    sessionStorage.clear();
+  } catch (e) {
+    console.log('Erro ao limpar storage:', e);
+  }
+}
+
+// Executar limpeza quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+  // Verificar se há versão antiga no cache
+  const currentVersion = document.querySelector('meta[name="app-version"]')?.content || '1.0.0';
+  const cachedVersion = localStorage.getItem('app-cache-version');
+  
+  if (cachedVersion && cachedVersion !== currentVersion) {
+    console.log('Versão antiga detectada, limpando cache...');
+    clearOldCache();
+  }
+  
+  // Salvar versão atual
+  localStorage.setItem('app-cache-version', currentVersion);
+});
+
+// Função para forçar reload sem cache (útil para debug)
+window.forceReload = function() {
+  clearOldCache();
+  window.location.reload(true);
+};
+</script>

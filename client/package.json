@@ -1,0 +1,96 @@
+{
+  "name": "igreja-contabilidade-frontend",
+  "version": "1.0.0",
+  "description": "Frontend do sistema de contabilidade para igreja",
+  "private": true,
+  "homepage": "/",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "build:analyze": "ANALYZE=true npm run build",
+    "build:production": "npm run build && npm run optimize:images",
+    "test": "react-scripts test",
+    "test:watch": "react-scripts test --watch",
+    "test:coverage": "react-scripts test --coverage --watchAll=false",
+    "test:ci": "react-scripts test --coverage --watchAll=false --ci",
+    "eject": "react-scripts eject",
+    "mojibake:check": "node scripts/fix-mojibake.cjs --check",
+    "mojibake:fix": "node scripts/fix-mojibake.cjs",
+    "optimize:images": "npx imagemin client/src/**/*.{jpg,jpeg,png,gif,svg} --out-dir=client/src/optimized",
+    "generate-icons": "node scripts/generate-icons.js",
+    "cap:sync": "npx cap sync android",
+    "cap:open": "npx cap open android",
+    "apk:build": "npm run build && npx cap sync android",
+    "apk:generate": "powershell -ExecutionPolicy Bypass -File ./gerar-apk.ps1",
+    "apk:generate:signed": "powershell -ExecutionPolicy Bypass -File ./gerar-apk-assinado.ps1",
+    "apk:generate:full": "powershell -ExecutionPolicy Bypass -File ./gerar-e-assinar-apk.ps1",
+    "apk:auto": "powershell -ExecutionPolicy Bypass -File ./gerar-apk-automatico.ps1",
+    "apk": "powershell -ExecutionPolicy Bypass -File ./gerar-apk-completo-auto.ps1",
+    "apk:sign": "powershell -ExecutionPolicy Bypass -File ./assinar-apk.ps1",
+    "apk:generate:bundle": "powershell -ExecutionPolicy Bypass -File ./gerar-apk-bundle.ps1",
+    "apk:generate:bundle:signed": "powershell -ExecutionPolicy Bypass -File ./gerar-apk-bundle-assinado.ps1",
+    "apk:interactive": "powershell -ExecutionPolicy Bypass -File ./gerar-apk-interativo.ps1"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.1",
+    "@capacitor/app": "^8.0.0",
+    "@capacitor/cli": "^8.0.1",
+    "@capacitor/core": "^8.0.1",
+    "@capacitor/push-notifications": "^7.0.3",
+    "@dataconnect/generated": "file:src/dataconnect-generated",
+    "@heroicons/react": "^2.0.18",
+    "@types/moment": "^2.11.29",
+    "@types/node": "^16.18.68",
+    "@types/react": "^18.2.66",
+    "@types/react-big-calendar": "^1.16.3",
+    "@types/react-dom": "^18.2.22",
+    "axios": "^1.6.2",
+    "firebase": "^12.3.0",
+    "framer-motion": "^11.18.2",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1",
+    "lodash": "^4.17.21",
+    "moment": "^2.30.1",
+    "onesignal-cordova-plugin": "^5.2.19",
+    "react": "18.2.0",
+    "react-big-calendar": "^1.19.4",
+    "react-dom": "18.2.0",
+    "react-icons": "^4.12.0",
+    "react-router-dom": "^6.20.1",
+    "react-scripts": "5.0.1",
+    "react-toastify": "^9.1.3",
+    "recharts": "^2.8.0",
+    "typescript": "4.9.5",
+    "uuid": "^9.0.1",
+    "web-vitals": "^2.1.4"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ],
+    "rules": {
+      "no-irregular-whitespace": "error"
+    }
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0"
+  }
+}
