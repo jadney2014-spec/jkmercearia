@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import {
   ShoppingBagIcon,
   CubeIcon,
@@ -12,14 +12,33 @@ import { appPath } from '../constants/app';
 
 export default function Welcome() {
   const { user } = useAuth();
+  const location = useLocation();
   const name = user?.displayName || user?.email?.split('@')[0] || 'Usuário';
   const [todayStats, setTodayStats] = useState({ count: 0, revenue: 0, itemsSold: 0 });
   const [lowStock, setLowStock] = useState(0);
 
-  useEffect(() => {
-    salesAPI.getTodayStats().then(setTodayStats).catch(() => {});
-    salesAPI.getLowStockProducts().then((p) => setLowStock(p.length)).catch(() => {});
+  const loadStats = useCallback(async () => {
+    try {
+      const [stats, lowProducts] = await Promise.all([
+        salesAPI.getTodayStats(),
+        salesAPI.getLowStockProducts(),
+      ]);
+      setTodayStats(stats);
+      setLowStock(lowProducts.length);
+    } catch {
+      // ignore
+    }
   }, []);
+
+  useEffect(() => {
+    loadStats();
+  }, [loadStats, location.pathname]);
+
+  useEffect(() => {
+    const onFocus = () => loadStats();
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, [loadStats]);
 
   const formatCurrency = (value: number) =>
     value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -77,10 +96,16 @@ export default function Welcome() {
       </div>
 
       {lowStock > 0 && (
-        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <p className="text-sm text-yellow-800 dark:text-yellow-200">
             Atenção: {lowStock} produto(s) com estoque baixo (≤ 5 unidades)
           </p>
+          <Link
+            to={appPath('compras')}
+            className="text-sm font-medium text-yellow-800 dark:text-yellow-200 underline hover:no-underline"
+          >
+            Ver lista de compras
+          </Link>
         </div>
       )}
 

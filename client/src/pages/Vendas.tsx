@@ -7,7 +7,7 @@ import {
   MagnifyingGlassIcon,
   CheckCircleIcon,
 } from '@heroicons/react/24/outline';
-import { productsAPI, salesAPI, Product, SaleItem, Sale } from '../services/salesAPI';
+import { productsAPI, salesAPI, parseFirestoreDate, Product, SaleItem, Sale } from '../services/salesAPI';
 import { useAuth } from '../firebase/AuthContext';
 import { toast } from 'react-toastify';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -33,6 +33,7 @@ const Vendas: React.FC = () => {
   const [paymentMethod, setPaymentMethod] = useState('dinheiro');
   const [notes, setNotes] = useState('');
   const [processing, setProcessing] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [tab, setTab] = useState<'nova' | 'historico'>('nova');
 
   const loadData = useCallback(async () => {
@@ -156,7 +157,22 @@ const Vendas: React.FC = () => {
     value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
   const formatDate = (date: Date | string) =>
-    new Date(date).toLocaleString('pt-BR');
+    parseFirestoreDate(date).toLocaleString('pt-BR');
+
+  const handleDeleteSale = async (sale: Sale) => {
+    if (!window.confirm('Excluir esta venda? O estoque dos produtos será restaurado.')) return;
+
+    try {
+      setDeletingId(sale.id);
+      await salesAPI.delete(sale.id);
+      toast.success('Venda excluída');
+      await loadData();
+    } catch (err: any) {
+      toast.error(err?.message || 'Erro ao excluir venda');
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   if (loading) return <LoadingSpinner />;
 
@@ -335,12 +351,13 @@ const Vendas: React.FC = () => {
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Itens</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pagamento</th>
                 <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Total</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase w-16">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900">
               {sales.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
+                  <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
                     Nenhuma venda registrada
                   </td>
                 </tr>
@@ -356,6 +373,16 @@ const Vendas: React.FC = () => {
                     <td className="px-4 py-3 text-sm capitalize">{sale.payment_method}</td>
                     <td className="px-4 py-3 text-right font-medium text-green-600">
                       {formatCurrency(sale.total)}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        onClick={() => handleDeleteSale(sale)}
+                        disabled={deletingId === sale.id}
+                        className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg disabled:opacity-50"
+                        title="Excluir venda"
+                      >
+                        <TrashIcon className="h-4 w-4" />
+                      </button>
                     </td>
                   </tr>
                 ))

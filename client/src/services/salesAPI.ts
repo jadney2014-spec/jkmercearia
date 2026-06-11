@@ -16,6 +16,31 @@ import { fixUtf8MojibakeDeep } from '../utils/textEncoding';
 
 const normalize = <T,>(value: T): T => fixUtf8MojibakeDeep(value);
 
+export function parseFirestoreDate(value: unknown): Date {
+  if (!value) return new Date();
+  if (value instanceof Date) return value;
+  if (typeof value === 'string' || typeof value === 'number') {
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
+  }
+  if (typeof value === 'object' && value !== null) {
+    const timestamp = value as { toDate?: () => Date; seconds?: number; _seconds?: number };
+    if (typeof timestamp.toDate === 'function') return timestamp.toDate();
+    const seconds = timestamp.seconds ?? timestamp._seconds;
+    if (typeof seconds === 'number') return new Date(seconds * 1000);
+  }
+  return new Date();
+}
+
+function isSameLocalDay(left: Date | string, right: Date): boolean {
+  const date = parseFirestoreDate(left);
+  return (
+    date.getFullYear() === right.getFullYear() &&
+    date.getMonth() === right.getMonth() &&
+    date.getDate() === right.getDate()
+  );
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -78,8 +103,8 @@ export const productsAPI = {
             barcode: data.barcode || '',
             unit: data.unit || 'un',
             active: data.active !== false,
-            created_at: data.created_at?.toDate?.() || data.created_at || new Date(),
-            updated_at: data.updated_at?.toDate?.() || data.updated_at || new Date(),
+            created_at: parseFirestoreDate(data.created_at),
+            updated_at: parseFirestoreDate(data.updated_at),
           };
         })
       );
@@ -127,18 +152,18 @@ export const salesAPI = {
           notes: data.notes || '',
           created_by: data.created_by || '',
           created_by_name: data.created_by_name || '',
-          created_at: data.created_at?.toDate?.() || data.created_at || new Date(),
+          created_at: parseFirestoreDate(data.created_at),
         } as Sale;
       });
 
       if (params?.start_date) {
         const start = new Date(params.start_date);
-        sales = sales.filter((s) => new Date(s.created_at) >= start);
+        sales = sales.filter((s) => parseFirestoreDate(s.created_at) >= start);
       }
       if (params?.end_date) {
         const end = new Date(params.end_date);
         end.setHours(23, 59, 59, 999);
-        sales = sales.filter((s) => new Date(s.created_at) <= end);
+        sales = sales.filter((s) => parseFirestoreDate(s.created_at) <= end);
       }
 
       return normalize(sales);
@@ -189,11 +214,36 @@ export const salesAPI = {
     return { id: salesRef.id };
   },
 
+  delete: async (id: string) => {
+    const saleRef = doc(db, 'sales', id);
+    const saleSnap = await getDoc(saleRef);
+    if (!saleSnap.exists()) {
+      throw new Error('Venda não encontrada');
+    }
+
+    const sale = saleSnap.data();
+    const batch = writeBatch(db);
+
+    for (const item of sale.items || []) {
+      const productRef = doc(db, 'products', item.product_id);
+      const productSnap = await getDoc(productRef);
+      if (productSnap.exists()) {
+        const currentStock = Number(productSnap.data().stock) || 0;
+        batch.update(productRef, {
+          stock: currentStock + Number(item.quantity || 0),
+          updated_at: Timestamp.now(),
+        });
+      }
+    }
+
+    batch.delete(saleRef);
+    await batch.commit();
+  },
+
   getTodayStats: async () => {
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
     const sales = await salesAPI.getAll();
-    const todaySales = sales.filter((s) => new Date(s.created_at) >= today);
+    const todaySales = sales.filter((s) => isSameLocalDay(s.created_at, today));
     const totalRevenue = todaySales.reduce((sum, s) => sum + s.total, 0);
     const totalItems = todaySales.reduce(
       (sum, s) => sum + s.items.reduce((is, i) => is + i.quantity, 0),

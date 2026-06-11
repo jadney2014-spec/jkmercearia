@@ -6,7 +6,7 @@ import {
   ArrowPathIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
-import { salesAPI, Sale, Product } from '../services/salesAPI';
+import { salesAPI, parseFirestoreDate, Sale, Product } from '../services/salesAPI';
 import { toast } from 'react-toastify';
 import AnimatedCard from '../components/AnimatedCard';
 import PageTransition from '../components/PageTransition';
@@ -36,7 +36,7 @@ const Dashboard: React.FC = () => {
       const now = new Date();
       const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
       const monthTotal = allSales
-        .filter((s) => new Date(s.created_at) >= monthStart)
+        .filter((s) => parseFirestoreDate(s.created_at) >= monthStart)
         .reduce((sum, s) => sum + s.total, 0);
       setMonthRevenue(monthTotal);
     } catch {
@@ -54,7 +54,7 @@ const Dashboard: React.FC = () => {
     value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
   const formatTime = (date: Date | string) =>
-    new Date(date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    parseFirestoreDate(date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
   if (loading) {
     return (
@@ -179,6 +179,9 @@ const Dashboard: React.FC = () => {
                     +{lowStock.length - 8} mais
                   </Link>
                 )}
+                <Link to={appPath('compras')} className="text-xs text-yellow-700 underline ml-1">
+                  Lista de compras
+                </Link>
               </div>
             </div>
           )}
