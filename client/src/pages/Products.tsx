@@ -151,9 +151,12 @@ const Products: React.FC = () => {
     if (!file) return;
     e.target.value = '';
 
-    if (!window.confirm(
-      `Importar produtos de "${file.name}"?\n\nProdutos já cadastrados com o mesmo nome serão ignorados.`
-    )) return;
+    const updateExisting = window.confirm(
+      `Importar produtos de "${file.name}"?\n\n` +
+      'OK = criar novos e ATUALIZAR estoque dos que já existem\n' +
+      'Cancelar = abortar importação'
+    );
+    if (!updateExisting) return;
 
     try {
       setImporting(true);
@@ -165,11 +168,11 @@ const Products: React.FC = () => {
         return;
       }
 
-      const result = await importProductsFromExcel(parsed.products, setImportProgress);
+      const result = await importProductsFromExcel(parsed.products, setImportProgress, { updateExisting: true });
       toast.success(
-        `Importação concluída: ${result.productsCreated} produto(s) novo(s), ` +
-        `${result.categoriesCreated} categoria(s) criada(s), ` +
-        `${result.productsSkipped} ignorado(s) (já existiam)`
+        `Importação concluída: ${result.productsCreated} novo(s), ` +
+        `${result.productsUpdated} estoque(s) atualizado(s), ` +
+        `${result.categoriesCreated} categoria(s) criada(s)`
       );
       await loadData();
     } catch (err: unknown) {

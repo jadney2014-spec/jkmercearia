@@ -41,14 +41,21 @@ export interface ImportProgress {
 export interface ImportResult {
   categoriesCreated: number;
   productsCreated: number;
+  productsUpdated: number;
   productsSkipped: number;
   totalParsed: number;
 }
 
+export interface ImportOptions {
+  updateExisting?: boolean;
+}
+
 export async function importProductsFromExcel(
   parsedProducts: ParsedExcelProduct[],
-  onProgress?: (p: ImportProgress) => void
+  onProgress?: (p: ImportProgress) => void,
+  options?: ImportOptions
 ): Promise<ImportResult> {
+  const updateExisting = options?.updateExisting ?? false;
   const categoriesRef = collection(db, 'categories');
   const productsRef = collection(db, 'products');
 
@@ -63,10 +70,10 @@ export async function importProductsFromExcel(
     if (name) categoryByName.set(name, d.id);
   });
 
-  const existingProductNames = new Set<string>();
+  const existingProducts = new Map<string, string>();
   productsSnap.docs.forEach((d) => {
     const name = String(d.data().name || '').trim().toLowerCase();
-    if (name) existingProductNames.add(name);
+    if (name) existingProducts.set(name, d.id);
   });
 
   const uniqueCategoryNames = Array.from(new Set(parsedProducts.map((p) => p.category).filter(Boolean)));
@@ -103,53 +110,68 @@ export async function importProductsFromExcel(
   }
 
   let productsCreated = 0;
+  let productsUpdated = 0;
   let productsSkipped = 0;
-  const toCreate = parsedProducts.filter((p) => {
+
+  const toProcess = parsedProducts.filter((p) => {
     const key = p.name.trim().toLowerCase();
-    if (existingProductNames.has(key)) {
-      productsSkipped++;
-      return false;
+    if (existingProducts.has(key)) {
+      if (!updateExisting) productsSkipped++;
+      return updateExisting;
     }
-    existingProductNames.add(key);
     return true;
   });
 
   const BATCH_SIZE = 400;
-  for (let i = 0; i < toCreate.length; i += BATCH_SIZE) {
-    const chunk = toCreate.slice(i, i + BATCH_SIZE);
+  for (let i = 0; i < toProcess.length; i += BATCH_SIZE) {
+    const chunk = toProcess.slice(i, i + BATCH_SIZE);
     const batch = writeBatch(db);
     const now = Timestamp.now();
 
     for (const item of chunk) {
       const categoryId = categoryByName.get(item.category.trim().toLowerCase()) || '';
-      const newRef = doc(productsRef);
-      batch.set(newRef, {
-        name: item.name.trim(),
-        price: Number(item.price) || 0,
-        purchase_price: 0,
-        stock: Number(item.quantity) || 0,
-        category_id: categoryId,
-        barcode: '',
-        unit: normalizeUnit(item.unit),
-        active: true,
-        created_at: now,
-        updated_at: now,
-      });
-      productsCreated++;
+      const key = item.name.trim().toLowerCase();
+      const existingId = existingProducts.get(key);
+
+      if (existingId) {
+        batch.update(doc(productsRef, existingId), {
+          stock: Number(item.quantity) || 0,
+          category_id: categoryId,
+          unit: normalizeUnit(item.unit),
+          updated_at: now,
+        });
+        productsUpdated++;
+      } else {
+        const newRef = doc(productsRef);
+        batch.set(newRef, {
+          name: item.name.trim(),
+          price: Number(item.price) || 0,
+          purchase_price: 0,
+          stock: Number(item.quantity) || 0,
+          category_id: categoryId,
+          barcode: '',
+          unit: normalizeUnit(item.unit),
+          active: true,
+          created_at: now,
+          updated_at: now,
+        });
+        existingProducts.set(key, newRef.id);
+        productsCreated++;
+      }
     }
 
     await batch.commit();
     onProgress?.({
       phase: 'products',
-      current: Math.min(i + BATCH_SIZE, toCreate.length),
-      total: toCreate.length,
-      message: `Produtos: ${Math.min(i + BATCH_SIZE, toCreate.length)}/${toCreate.length}`,
+      current: Math.min(i + BATCH_SIZE, toProcess.length),
+      total: parsedProducts.length,
+      message: `Produtos: ${Math.min(i + BATCH_SIZE, toProcess.length)}/${parsedProducts.length}`,
     });
   }
 
   onProgress?.({
     phase: 'done',
-    current: productsCreated,
+    current: productsCreated + productsUpdated,
     total: parsedProducts.length,
     message: 'Importação concluída!',
   });
@@ -157,6 +179,7 @@ export async function importProductsFromExcel(
   return {
     categoriesCreated,
     productsCreated,
+    productsUpdated,
     productsSkipped,
     totalParsed: parsedProducts.length,
   };
