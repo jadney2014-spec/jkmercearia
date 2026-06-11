@@ -32,8 +32,17 @@ function readUInt32LE(buf: Uint8Array, off: number): number {
   return (buf[off] | (buf[off + 1] << 8) | (buf[off + 2] << 16) | (buf[off + 3] << 24)) >>> 0;
 }
 
+type InflateStream = {
+  writable: WritableStream<Uint8Array>;
+  readable: ReadableStream<Uint8Array>;
+};
+
 async function inflateRaw(data: Uint8Array): Promise<Uint8Array> {
-  const ds = new DecompressionStream('deflate-raw');
+  const Decomp = (globalThis as { DecompressionStream?: new (format: string) => InflateStream }).DecompressionStream;
+  if (!Decomp) {
+    throw new Error('DecompressionStream não é suportado neste navegador.');
+  }
+  const ds = new Decomp('deflate-raw');
   const writer = ds.writable.getWriter();
   const reader = ds.readable.getReader();
   const chunks: Uint8Array[] = [];
@@ -108,7 +117,7 @@ function parseSharedStrings(xml: string): string[] {
   const re = /<si>([\s\S]*?)<\/si>/g;
   let m: RegExpExecArray | null;
   while ((m = re.exec(xml))) {
-    const parts = [...m[1].matchAll(/<t[^>]*>([\s\S]*?)<\/t>/g)].map((x) => decodeXml(x[1]));
+    const parts = Array.from(m[1].matchAll(/<t[^>]*>([\s\S]*?)<\/t>/g)).map((x) => decodeXml(x[1]));
     strings.push(parts.join(''));
   }
   return strings;
@@ -154,7 +163,7 @@ function parseSheetRows(xml: string, sharedStrings: string[]): string[][] {
     rowsMap.set(rowIndex, row);
   }
   if (!rowsMap.size) return [];
-  const maxRow = Math.max(...rowsMap.keys());
+  const maxRow = Math.max(...Array.from(rowsMap.keys()));
   const rows: string[][] = [];
   for (let i = 0; i <= maxRow; i++) rows.push(rowsMap.get(i) || []);
   return rows;
@@ -219,16 +228,16 @@ export async function parseExcelFile(file: ArrayBuffer): Promise<ParsedExcelResu
   const relsText = new TextDecoder().decode(relsXml);
 
   const relMap = new Map<string, string>();
-  for (const m of relsText.matchAll(/Id="([^"]+)"[^>]*Target="([^"]+)"/g)) {
+  Array.from(relsText.matchAll(/Id="([^"]+)"[^>]*Target="([^"]+)"/g)).forEach((m) => {
     relMap.set(m[1], m[2].replace(/^\.\//, 'xl/'));
-  }
+  });
 
   const sheetNames: string[] = [];
   const sheetTargets: string[] = [];
-  for (const m of workbookText.matchAll(/<sheet[^>]*name="([^"]+)"[^>]*r:id="([^"]+)"/g)) {
+  Array.from(workbookText.matchAll(/<sheet[^>]*name="([^"]+)"[^>]*r:id="([^"]+)"/g)).forEach((m) => {
     sheetNames.push(m[1]);
     sheetTargets.push(relMap.get(m[2]) || '');
-  }
+  });
 
   const sharedXml = zipEntries.get('xl/sharedStrings.xml');
   const sharedStrings = sharedXml ? parseSharedStrings(new TextDecoder().decode(sharedXml)) : [];
@@ -310,7 +319,7 @@ export async function parseExcelFile(file: ArrayBuffer): Promise<ParsedExcelResu
     }
   });
 
-  const uniqueCategories = [...categoriesSet].filter(Boolean).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  const uniqueCategories = Array.from(categoriesSet).filter(Boolean).sort((a, b) => a.localeCompare(b, 'pt-BR'));
 
   return {
     sheetNames,

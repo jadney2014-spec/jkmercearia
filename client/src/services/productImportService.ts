@@ -69,7 +69,7 @@ export async function importProductsFromExcel(
     if (name) existingProductNames.add(name);
   });
 
-  const uniqueCategoryNames = [...new Set(parsedProducts.map((p) => p.category).filter(Boolean))];
+  const uniqueCategoryNames = Array.from(new Set(parsedProducts.map((p) => p.category).filter(Boolean)));
   let categoriesCreated = 0;
 
   onProgress?.({
