@@ -41,6 +41,9 @@ const categoriesAPI = {
     });
     return { id: docRef.id };
   },
+  delete: async (id) => {
+    await db.collection('categories').doc(id).delete();
+  },
 };
 
 async function importProducts() {
@@ -293,13 +296,26 @@ TORSILAX CAIXA C/301
     const trimmedLine = line.trim();
     if (!trimmedLine) return;
 
-    // Check if it's a product line first
+    // Ignore specific header lines
+    if (trimmedLine === 'PRODUTOQUANTIDADEVALOR') {
+      return;
+    }
+
     // Regex for products with optional unit in parentheses: (product name) (optional unit) (stock)
-    const productWithParenthesesUnitMatch = trimmedLine.match(/(.+?)(?:\s*\((.*?)\)\s*)?\s*(\d+)$/);
+    // The key change here is to ensure the stock number is preceded by a space or is at the very end.
+    const productWithParenthesesUnitMatch = trimmedLine.match(/(.+?)(?:\s*\((.*?)\)\s*)?\s+(\d+)$/);
+
     // Regex for complex units like "FARDO C/12": (product name) (complex unit) (stock)
     const complexUnitMatch = trimmedLine.match(/(.*?)\s+(FARDO C\/\d+)\s+(\d+)$/i);
+
     // Regex for products with " - TROCA" at the end: (product name) (stock) - TROCA
     const productWithTrocaMatch = trimmedLine.match(/(.+?)\s+(\d+)\s*-\s*TROCA$/i);
+
+    // More robust regex for products where quantity is directly appended to the name,
+    // but we want to ensure it's a distinct number at the end.
+    // This will try to capture the last sequence of digits as the stock,
+    // preceded by a non-digit character or start of string.
+    const genericProductMatch = trimmedLine.match(/(.*?)\s*(\d+)$/);
 
 
     if (complexUnitMatch) {
@@ -344,7 +360,18 @@ TORSILAX CAIXA C/301
         categoryName: currentCategoryName,
         unit: unit
       });
-    } else if (trimmedLine) { // If it's not a product line, treat it as a category
+    } else if (genericProductMatch) { // Fallback for products like "PALITO DE UNHAS100" or "AÇUCAR 2K3"
+      const name = genericProductMatch[1].trim();
+      const stock = parseInt(genericProductMatch[2], 10);
+
+      parsedProducts.push({
+        name: name,
+        stock: stock,
+        categoryName: currentCategoryName,
+        unit: 'un' // Default unit
+      });
+    }
+    else if (trimmedLine) { // If it's not a product line, treat it as a category
       currentCategoryName = trimmedLine;
     }
   });
@@ -402,6 +429,34 @@ TORSILAX CAIXA C/301
     }
   }
   console.log('Product import process completed.');
+
+  // --- Cleanup: Correcting "PRODUTOQUANTIDADEVALOR" category ---
+  console.log('Starting category cleanup...');
+  const allProducts = await productsAPI.getAll();
+  const allCategories = await categoriesAPI.getCategories();
+
+  const itensMerceariaCategory = allCategories.find(cat => cat.name.toUpperCase() === 'ITENS MERCEARIA');
+  const produtoQuantidadeValorCategory = allCategories.find(cat => cat.name.toUpperCase() === 'PRODUTOQUANTIDADEVALOR');
+
+  if (itensMerceariaCategory && produtoQuantidadeValorCategory) {
+    console.log('Found "PRODUTOQUANTIDADEVALOR" category. Reassigning products...');
+    for (const product of allProducts) {
+      if (product.category_id === produtoQuantidadeValorCategory.id) {
+        await productsAPI.update(product.id, { category_id: itensMerceariaCategory.id });
+        console.log(`Reassigned product "${product.name}" to "ITENS MERCEARIA".`);
+      }
+    }
+    // Delete the incorrect category
+    await categoriesAPI.deleteCategory(produtoQuantidadeValorCategory.id);
+    console.log('Deleted "PRODUTOQUANTIDADEVALOR" category.');
+  } else if (produtoQuantidadeValorCategory) {
+    // If "ITENS MERCEARIA" doesn't exist but "PRODUTOQUANTIDADEVALOR" does, just delete the incorrect one
+    await categoriesAPI.deleteCategory(produtoQuantidadeValorCategory.id);
+    console.log('Deleted "PRODUTOQUANTIDADEVALOR" category (ITENS MERCEARIA not found).');
+  } else {
+    console.log('No "PRODUTOQUANTIDADEVALOR" category found for cleanup.');
+  }
+  console.log('Category cleanup completed.');
 }
 
 importProducts().catch(console.error);
