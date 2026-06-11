@@ -5,6 +5,7 @@ import { useUserRole } from '../hooks/useUserRole';
 import { NotificationCenter } from '../contexts/NotificationContext';
 import ThemeToggle from './ThemeToggle';
 import TabTransition from './TabTransition';
+import OfflineIndicator from './OfflineIndicator';
 import { usePreloadComponents } from '../hooks/usePreloadComponents';
 import { APP_NAME, appPath } from '../constants/app';
 import {
@@ -110,13 +111,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </div>
       <div>
         <h1 className="text-lg font-bold text-gray-700 dark:text-gray-300">{APP_NAME}</h1>
-        <p className="text-xs text-gray-500 dark:text-gray-400">Sistema de Vendas</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">Gestão & Vendas</p>
       </div>
     </div>
   );
 
   return (
     <div className="min-h-[100dvh] flex flex-col bg-gray-950">
+      <OfflineIndicator />
       {/* Mobile sidebar */}
       <div className={`fixed inset-0 z-50 lg:hidden ${sidebarOpen ? 'block' : 'hidden'}`}>
         <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setSidebarOpen(false)} />

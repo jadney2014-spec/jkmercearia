@@ -103,51 +103,18 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       '@type': 'Organization',
       name: siteName,
       url: siteUrl,
-      logo: `${siteUrl}/img/ICONE-RESGATE.png`,
+      logo: `${siteUrl}/logo192.png`,
       description: description,
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: 'Quadra 38, Área Especial, Lote E',
-        addressLocality: 'Vila São José',
-        addressRegion: 'DF',
-        postalCode: '72010-010',
-        addressCountry: 'BR'
-      },
       contactPoint: {
         '@type': 'ContactPoint',
-        email: 'cresgate012@gmail.com',
         contactType: 'customer service'
-      },
-      sameAs: [
-        'https://www.facebook.com/comunidadecresgate/',
-        'https://www.instagram.com/comunidadecresgate/',
-        'https://youtube.com/@comunidadecresgate'
-      ]
+      }
     });
     document.head.appendChild(organizationScript);
 
-    // LocalBusiness Schema
-    const placeScript = document.createElement('script');
-    placeScript.type = 'application/ld+json';
-    placeScript.text = JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'Place',
-      name: siteName,
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: 'Quadra 38, Área Especial, Lote E',
-        addressLocality: 'Vila São José',
-        addressRegion: 'DF',
-        postalCode: '72010-010',
-        addressCountry: 'BR'
-      },
-      geo: {
-        '@type': 'GeoCoordinates',
-        latitude: '-15.7942',
-        longitude: '-47.8822'
-      }
-    });
-    document.head.appendChild(placeScript);
+    // Remove old LocalBusiness Schema
+    const existingPlaceScript = document.querySelector('script[data-id="place-schema"]');
+    if (existingPlaceScript) existingPlaceScript.remove();
   }, [title, description, keywords, image, fullUrl, type, author, publishedTime, modifiedTime, siteName, siteUrl, fullImageUrl]);
 
   return null;

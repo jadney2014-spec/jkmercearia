@@ -1,6 +1,6 @@
 import { getApps, getApp, initializeApp } from 'firebase/app';
 import { browserLocalPersistence, getAuth, setPersistence } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, enableMultiTabIndexedDbPersistence } from 'firebase/firestore';
 import { getFunctions } from 'firebase/functions';
 import { getStorage } from 'firebase/storage';
 import { getAnalytics, isSupported, Analytics } from 'firebase/analytics';
@@ -76,6 +76,17 @@ export const firebaseStorage = getStorage(app);
 if (typeof window !== 'undefined') {
   setPersistence(auth, browserLocalPersistence).catch(() => {
     // Ignorar falhas de persistência; o Auth ainda funciona em memória
+  });
+
+  // Habilitar persistência offline do Firestore
+  enableMultiTabIndexedDbPersistence(db).catch((err) => {
+    if (err.code === 'failed-precondition') {
+      // Múltiplas abas abertas, a persistência só pode ser habilitada em uma aba de cada vez.
+      console.warn('Firestore persistence failed: multi-tab precondition');
+    } else if (err.code === 'unimplemented') {
+      // O navegador não suporta todos os recursos necessários para a persistência
+      console.warn('Firestore persistence is not available in this browser');
+    }
   });
 }
 

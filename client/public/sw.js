@@ -86,7 +86,7 @@ self.addEventListener('activate', (event) => {
         cacheNames.map((cacheName) => {
           // Limpar caches antigos (tanto de assets quanto de dados)
           if (cacheName !== CACHE_NAME && cacheName !== DATA_CACHE_NAME && 
-              cacheName.startsWith('comunidade-resgate')) {
+              cacheName.startsWith('jk-mercearia')) {
             console.log('[SW] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }

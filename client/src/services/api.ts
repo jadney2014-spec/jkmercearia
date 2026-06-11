@@ -73,7 +73,7 @@ export const transactionsAPI = {
       console.log('âœ… Transações carregadas do Firestore:', transactions.length);
       return normalize({ data: { transactions, total: transactions.length } });
     } catch (error) {
-      console.error('âŒ Erro ao buscar transações:', error);
+      console.error('❌ Erro ao buscar transações:', error);
       return { data: { transactions: [], total: 0 } };
     }
   },

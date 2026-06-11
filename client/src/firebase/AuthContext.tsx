@@ -11,6 +11,7 @@ import {
 import { auth } from './config';
 import storage from '../utils/storage';
 import { registerNativePush } from '../utils/nativePush';
+import { appPath } from '../constants/app';
 
 interface AuthContextType {
   user: User | null;

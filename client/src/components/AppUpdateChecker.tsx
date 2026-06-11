@@ -39,8 +39,8 @@ const AppUpdateChecker: React.FC<AppUpdateCheckerProps> = ({
     try {
       // Como o app carrega do servidor remoto, uma simples recarga já traz atualizações
       // Mas vamos verificar se há uma nova versão disponível
-      const response = await fetch('https://comunidaderesgate-82655.web.app/manifest.json', {
-        cache: 'no-cache'
+      const response = await fetch('/manifest.json', {
+        cache: 'no-store'
       });
       
       if (response.ok) {
