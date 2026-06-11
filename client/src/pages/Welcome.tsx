@@ -104,7 +104,7 @@ export default function Welcome() {
             to={appPath('compras')}
             className="text-sm font-medium text-yellow-800 dark:text-yellow-200 underline hover:no-underline"
           >
-            Ver lista de compras
+            Ver itens a comprar
           </Link>
         </div>
       )}

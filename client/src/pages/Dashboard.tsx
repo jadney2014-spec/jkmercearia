@@ -180,7 +180,7 @@ const Dashboard: React.FC = () => {
                   </Link>
                 )}
                 <Link to={appPath('compras')} className="text-xs text-yellow-700 underline ml-1">
-                  Lista de compras
+                  Lista de itens a comprar
                 </Link>
               </div>
             </div>

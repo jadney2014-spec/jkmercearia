@@ -15,10 +15,23 @@ import { parseFirestoreDate } from './salesAPI';
 
 const normalize = <T,>(value: T): T => fixUtf8MojibakeDeep(value);
 
+function normalizeItems(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item).trim()).filter(Boolean);
+  }
+  if (typeof value === 'string' && value.trim()) {
+    return value
+      .split('\n')
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+  return [];
+}
+
 export interface Fiado {
   id: string;
   customer_name: string;
-  items: string;
+  items: string[];
   total: number;
   notes?: string;
   status: 'open' | 'paid';
@@ -39,7 +52,7 @@ export const fiadosAPI = {
           return {
             id: d.id,
             customer_name: data.customer_name || '',
-            items: data.items || '',
+            items: normalizeItems(data.items),
             total: Number(data.total) || 0,
             notes: data.notes || '',
             status: data.status === 'paid' ? 'paid' : 'open',
@@ -56,20 +69,35 @@ export const fiadosAPI = {
 
   create: async (data: {
     customer_name: string;
-    items: string;
+    items: string[];
     total?: number;
     notes?: string;
   }) => {
     const ref = collection(db, 'fiados');
     const docRef = await addDoc(ref, {
       customer_name: data.customer_name.trim(),
-      items: data.items.trim(),
+      items: data.items.map((item) => item.trim()).filter(Boolean),
       total: Number(data.total) || 0,
       notes: data.notes?.trim() || '',
       status: 'open',
       created_at: Timestamp.now(),
     });
     return { id: docRef.id };
+  },
+
+  update: async (
+    id: string,
+    data: Partial<Pick<Fiado, 'customer_name' | 'items' | 'total' | 'notes'>>
+  ) => {
+    const ref = doc(db, 'fiados', id);
+    const payload: Record<string, unknown> = { updated_at: Timestamp.now() };
+
+    if (data.customer_name !== undefined) payload.customer_name = data.customer_name.trim();
+    if (data.items !== undefined) payload.items = data.items.map((item) => item.trim()).filter(Boolean);
+    if (data.total !== undefined) payload.total = Number(data.total) || 0;
+    if (data.notes !== undefined) payload.notes = data.notes.trim();
+
+    await updateDoc(ref, payload);
   },
 
   markAsPaid: async (id: string) => {

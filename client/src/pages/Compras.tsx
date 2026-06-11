@@ -67,9 +67,9 @@ const Compras: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Fazer Compras</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Itens a Comprar</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Produtos com estoque ≤ 5 unidades — marque conforme for comprando
+            Produtos com estoque baixo (≤ 5) — marque na loja ou exporte em PDF
           </p>
         </div>
         <div className="flex flex-wrap gap-2">

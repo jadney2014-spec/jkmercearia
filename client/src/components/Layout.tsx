@@ -54,8 +54,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navigation: NavItem[] = [
     { type: 'link', name: 'Início', href: appPath('welcome'), icon: HomeIcon },
     { type: 'link', name: 'Nova Venda', href: appPath('vendas'), icon: ShoppingBagIcon },
-    { type: 'link', name: 'Controle de Fiados', href: appPath('fiados'), icon: ClipboardDocumentListIcon },
-    { type: 'link', name: 'Fazer Compras', href: appPath('compras'), icon: ShoppingCartIcon },
     { type: 'link', name: 'Dashboard', href: appPath('dashboard'), icon: ChartBarIcon },
 
     { type: 'heading', name: 'Gerenciar' },
@@ -63,6 +61,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       ? ([
           { type: 'link', name: 'Produtos', href: appPath('products'), icon: CubeIcon },
           { type: 'link', name: 'Categorias', href: appPath('categories'), icon: TagIcon },
+          { type: 'link', name: 'Fiados', href: appPath('fiados'), icon: ClipboardDocumentListIcon },
+          { type: 'link', name: 'Itens a Comprar', href: appPath('compras'), icon: ShoppingCartIcon },
         ] as NavItem[])
       : []),
 
