@@ -45,28 +45,21 @@ const categoriesAPI = {
 
 async function importProducts() {
   const rawProductList = `
-SALGADINHOS
-PELISKÃO (UNIDADE) 11
-MICÃO 120G (UNIDADE) 11
-SELEÇÃO 50G (UNIDADE) 7
-PIPOCA DOCE P (UNIDADE) 5
-PELINHA KARI KARI (UNIDADE )14
-AMENDUPÃ (UNIDADE) 9
-PILHA
-PILHA RAYOVAC "AA" (UNIDADE) 28
-PILHA SEGMA "AA" (UNIDADE) 16
-PAPELARIA
-LÁPIS FABER CASTEL(UNIDADE) 8
-LÁPIS BIC (UNIDADE) 9
-CANETAS (UNIDADE) 11
-DUREX (UNIDADE) 4
-FITA ISOLANTE (UNIDADE) 3
-APONTADOR (UNIDADE) 5
-CASA
-VASSOURA CONDOR (UNIDADE) 8
-CARVÃO CHURRASCO (UNIDADE) 7
-BEBIDAS
-ÁGUA MINERAL FARDO C/12 3
+M4U - CHIPES E RECARGAS
+CHIP VIVO S/ RECARGA 4
+CHIP VIVO C/ RECARGA6
+CHIP TIM C/ RECARGA6
+CHIP TIM S/ RECARGA4
+CHIP CLARO C/ RECARGA6
+CHIP CLARO S/ RECARGA4
+CHIP CLARO (ROZANA)1
+CHIPS VENDIDOS
+CHIP VIVO S/ RECARGA 1 - TROCA
+CHIP VIVO C/ RECARGA0
+CHIP TIM C/ RECARGA1
+CHIP TIM S/ RECARGA4
+CHIP CLARO C/ RECARGA3
+CHIP CLARO S/ RECARGA1
 `;
 
   const parsedProducts = [];
@@ -76,18 +69,14 @@ BEBIDAS
     const trimmedLine = line.trim();
     if (!trimmedLine) return;
 
-    // Check if it's a category header (all uppercase, no numbers)
-    if (trimmedLine === trimmedLine.toUpperCase() && !/\d/.test(trimmedLine)) {
-      currentCategoryName = trimmedLine;
-      return;
-    }
-
-    // Try to parse as a product with optional unit in parentheses
-    // This regex is more tolerant to spaces around the unit in parentheses
+    // Check if it's a product line first
+    // Regex for products with optional unit in parentheses: (product name) (optional unit) (stock)
     const productWithParenthesesUnitMatch = trimmedLine.match(/(.+?)(?:\s*\((.*?)\)\s*)?\s*(\d+)$/);
-
-    // Handle cases like "ÁGUA MINERAL FARDO C/12 3" where unit is part of name and not in parentheses
+    // Regex for complex units like "FARDO C/12": (product name) (complex unit) (stock)
     const complexUnitMatch = trimmedLine.match(/(.*?)\s+(FARDO C\/\d+)\s+(\d+)$/i);
+    // Regex for products with " - TROCA" at the end: (product name) (stock) - TROCA
+    const productWithTrocaMatch = trimmedLine.match(/(.+?)\s+(\d+)\s*-\s*TROCA$/i);
+
 
     if (complexUnitMatch) {
       const name = complexUnitMatch[1].trim();
@@ -100,11 +89,26 @@ BEBIDAS
         categoryName: currentCategoryName,
         unit: unit
       });
+    } else if (productWithTrocaMatch) {
+      const name = productWithTrocaMatch[1].trim() + ' - TROCA'; // Include " - TROCA" in the name
+      const stock = parseInt(productWithTrocaMatch[2], 10);
+
+      parsedProducts.push({
+        name: name,
+        stock: stock,
+        categoryName: currentCategoryName,
+        unit: 'un' // Default unit
+      });
     } else if (productWithParenthesesUnitMatch) {
-      const name = productWithParenthesesUnitMatch[1].trim();
+      let name = productWithParenthesesUnitMatch[1].trim();
       let unit = productWithParenthesesUnitMatch[2] ? productWithParenthesesUnitMatch[2].trim().toLowerCase() : 'un'; // Default to 'un'
       const stock = parseInt(productWithParenthesesUnitMatch[3], 10);
 
+      // Special handling for "ROZANA" - assume it's part of the name if it was captured as a unit
+      if (unit === 'rozana') {
+        name = `${name} (${productWithParenthesesUnitMatch[2].trim()})`;
+        unit = 'un'; // Reset unit to default
+      }
       // Standardize 'unidade' to 'un'
       if (unit === 'unidade') {
         unit = 'un';
@@ -116,8 +120,8 @@ BEBIDAS
         categoryName: currentCategoryName,
         unit: unit
       });
-    } else {
-      console.warn(`Could not parse line: "${trimmedLine}"`);
+    } else if (trimmedLine) { // If it's not a product line, treat it as a category
+      currentCategoryName = trimmedLine;
     }
   });
 
