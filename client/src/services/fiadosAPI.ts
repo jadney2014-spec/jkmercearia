@@ -90,7 +90,7 @@ export const fiadosAPI = {
     data: Partial<Pick<Fiado, 'customer_name' | 'items' | 'total' | 'notes'>>
   ) => {
     const ref = doc(db, 'fiados', id);
-    const payload: Record<string, unknown> = { updated_at: Timestamp.now() };
+    const payload: any = { updated_at: Timestamp.now() };
 
     if (data.customer_name !== undefined) payload.customer_name = data.customer_name.trim();
     if (data.items !== undefined) payload.items = data.items.map((item) => item.trim()).filter(Boolean);
