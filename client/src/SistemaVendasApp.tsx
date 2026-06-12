@@ -16,11 +16,12 @@ import { appPath } from './constants/app';
 const Dashboard = lazyWithRetry(() => import('./pages/Dashboard'));
 const Vendas = lazyWithRetry(() => import('./pages/Vendas'));
 const Products = lazyWithRetry(() => import('./pages/Products'));
-const Reports = lazyWithRetry(() => import('./pages/Reports'));
+const Compras = lazyWithRetry(() => import('./pages/Compras'));
+const ListaManual = lazyWithRetry(() => import('./pages/ListaManual'));
 const Categories = lazyWithRetry(() => import('./pages/Categories'));
 const Welcome = lazyWithRetry(() => import('./pages/Welcome'));
 const Fiados = lazyWithRetry(() => import('./pages/Fiados'));
-const Compras = lazyWithRetry(() => import('./pages/Compras'));
+const Reports = lazyWithRetry(() => import('./pages/Reports'));
 const AdminsAdmin = lazyWithRetry(() => import('./pages/AdminsAdmin'));
 
 function SistemaVendasApp() {
@@ -124,6 +125,15 @@ function SistemaVendasApp() {
                 element={
                   <RoleProtectedRoute allow={['admin', 'vendedor', 'tesouraria']}>
                     <Compras />
+                  </RoleProtectedRoute>
+                }
+              />
+
+              <Route
+                path="lista-manual"
+                element={
+                  <RoleProtectedRoute allow={['admin', 'vendedor', 'tesouraria']}>
+                    <ListaManual />
                   </RoleProtectedRoute>
                 }
               />

@@ -29,6 +29,8 @@ const Vendas: React.FC = () => {
   const [sales, setSales] = useState<Sale[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [scannerMode, setScannerMode] = useState(true);
+  const [barcodeInput, setBarcodeValue] = useState('');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [paymentMethod, setPaymentMethod] = useState('dinheiro');
   const [notes, setNotes] = useState('');
@@ -55,6 +57,36 @@ const Vendas: React.FC = () => {
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  // Lógica do Scanner
+  const handleScannerInput = (code: string) => {
+    const product = products.find(p => p.barcode === code);
+    if (product) {
+      addToCart(product);
+      toast.success(`${product.name} adicionado`, { autoClose: 1000, position: 'bottom-right', hideProgressBar: true });
+    } else {
+      toast.error(`Produto com código ${code} não encontrado`);
+    }
+    setBarcodeValue('');
+  };
+
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (tab !== 'nova' || !scannerMode) return;
+      
+      // Se o usuário não estiver em um campo de texto, foca no scanner
+      const target = e.target as HTMLElement;
+      const isInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA';
+      
+      if (!isInput && e.key.length === 1) {
+        const input = document.getElementById('scanner-focus-input');
+        input?.focus();
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [tab, scannerMode]);
 
   const filteredProducts = products.filter(
     (p) =>
@@ -178,12 +210,55 @@ const Vendas: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Sistema de Vendas (RPV)</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          Vendeu, lançou — registro rápido de ponto de venda
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className={`p-2 rounded-lg ${scannerMode ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500'}`}>
+            <ShoppingCartIcon className="h-6 w-6" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Sistema de Vendas (RPV)</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Vendeu, lançou — registro rápido de ponto de venda
+            </p>
+          </div>
+        </div>
+
+        {/* MODO SCANNER TOGGLE */}
+        <div className="flex items-center gap-3 bg-white dark:bg-gray-800 p-2 px-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+          <span className={`text-xs font-black uppercase tracking-tighter ${scannerMode ? 'text-blue-600' : 'text-gray-400'}`}>
+            {scannerMode ? 'Modo Scanner Ativo' : 'Scanner Desativado'}
+          </span>
+          <button
+            onClick={() => setScannerMode(!scannerMode)}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
+              scannerMode ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'
+            }`}
+          >
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                scannerMode ? 'translate-x-6' : 'translate-x-1'
+              }`}
+            />
+          </button>
+        </div>
       </div>
+
+      {/* INPUT INVISÍVEL PARA O SCANNER */}
+      {scannerMode && tab === 'nova' && (
+        <input
+          id="scanner-focus-input"
+          type="text"
+          value={barcodeInput}
+          onChange={(e) => setBarcodeValue(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && barcodeInput) {
+              handleScannerInput(barcodeInput);
+            }
+          }}
+          className="fixed opacity-0 pointer-events-none"
+          autoFocus
+        />
+      )}
 
       <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
         <button

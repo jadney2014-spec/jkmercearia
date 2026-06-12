@@ -35,6 +35,7 @@ const Products: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [barcodeInput, setBarcodeInput] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
   const [form, setForm] = useState(emptyForm);
@@ -63,6 +64,48 @@ const Products: React.FC = () => {
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  // Lógica do Scanner Global
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      // Se não for uma tecla de caractere ou Enter, ignora
+      if (e.key.length !== 1 && e.key !== 'Enter') return;
+      
+      // Se estiver focado em um input real (exceto o de busca), deixa o comportamento padrão
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' && target.id !== 'scanner-focus-products') return;
+
+      if (e.key === 'Enter') {
+        if (barcodeInput) {
+          // Busca produto pelo código
+          const found = products.find(p => p.barcode === barcodeInput);
+          if (found) {
+            setSearch(barcodeInput);
+            toast.info(`Produto encontrado: ${found.name}`, { autoClose: 2000 });
+          } else {
+            // Se o form estiver aberto, preenche o barcode
+            if (showForm) {
+              setForm(prev => ({ ...prev, barcode: barcodeInput }));
+              toast.success('Código capturado!');
+            } else {
+              toast.warning('Produto não cadastrado. Abrindo novo cadastro...');
+              openNew();
+              setForm(prev => ({ ...prev, barcode: barcodeInput }));
+            }
+          }
+          setBarcodeInput('');
+        }
+      } else {
+        setBarcodeInput(prev => prev + e.key);
+        // Timeout para limpar o buffer se demorar demais (não é scanner)
+        const timer = setTimeout(() => setBarcodeInput(''), 100);
+        return () => clearTimeout(timer);
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [barcodeInput, products, showForm]);
 
   const searchTerm = search.trim().toLowerCase();
   const filtered = products.filter(

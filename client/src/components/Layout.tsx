@@ -21,6 +21,7 @@ import {
   UsersIcon,
   ClipboardDocumentListIcon,
   ShoppingCartIcon,
+  PlusIcon,
 } from '@heroicons/react/24/outline';
 
 interface NavLink {
@@ -63,6 +64,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           { type: 'link', name: 'Categorias', href: appPath('categories'), icon: TagIcon },
           { type: 'link', name: 'Fiados', href: appPath('fiados'), icon: ClipboardDocumentListIcon },
           { type: 'link', name: 'Lista de Compras', href: appPath('compras'), icon: ShoppingCartIcon },
+          { type: 'link', name: 'Lista de Feira', href: appPath('lista-manual'), icon: PlusIcon },
         ] as NavItem[])
       : []),
 

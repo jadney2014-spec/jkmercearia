@@ -15,28 +15,41 @@ import { parseFirestoreDate } from './salesAPI';
 
 const normalize = <T,>(value: T): T => fixUtf8MojibakeDeep(value);
 
-function normalizeItems(value: unknown): string[] {
-  if (Array.isArray(value)) {
-    return value.map((item) => String(item).trim()).filter(Boolean);
-  }
-  if (typeof value === 'string' && value.trim()) {
-    return value
-      .split('\n')
-      .map((item) => item.trim())
-      .filter(Boolean);
-  }
-  return [];
+export interface FiadoItem {
+  text: string;
+  date: Date | string;
+  price?: number;
 }
 
 export interface Fiado {
   id: string;
   customer_name: string;
-  items: string[];
+  items: FiadoItem[];
   total: number;
   notes?: string;
   status: 'open' | 'paid';
-  created_at: Date;
-  paid_at?: Date;
+  created_at: Date | string;
+  paid_at?: Date | string;
+}
+
+function normalizeItems(value: unknown): FiadoItem[] {
+  if (Array.isArray(value)) {
+    return value.map((item) => {
+      if (typeof item === 'object' && item !== null) {
+        return {
+          text: String((item as any).text || ''),
+          date: (item as any).date ? parseFirestoreDate((item as any).date) : new Date(),
+          price: Number((item as any).price) || 0,
+        };
+      }
+      return {
+        text: String(item).trim(),
+        date: new Date(),
+        price: 0,
+      };
+    }).filter(i => i.text);
+  }
+  return [];
 }
 
 export const fiadosAPI = {
@@ -46,21 +59,28 @@ export const fiadosAPI = {
       const q = query(ref, orderBy('created_at', 'desc'));
       const snapshot = await getDocs(q);
 
-      return normalize(
-        snapshot.docs.map((d) => {
-          const data = d.data();
-          return {
-            id: d.id,
-            customer_name: data.customer_name || '',
-            items: normalizeItems(data.items),
-            total: Number(data.total) || 0,
-            notes: data.notes || '',
-            status: data.status === 'paid' ? 'paid' : 'open',
-            created_at: parseFirestoreDate(data.created_at),
-            paid_at: data.paid_at ? parseFirestoreDate(data.paid_at) : undefined,
-          } as Fiado;
-        })
-      );
+      const list = snapshot.docs.map((d) => {
+        const data = d.data();
+        // Garante que as datas sejam processadas ANTES da normalização de texto
+        // para evitar que o fixUtf8MojibakeDeep estrague os objetos Date
+        const createdAt = data.created_at ? parseFirestoreDate(data.created_at) : new Date();
+        const paidAt = data.paid_at ? parseFirestoreDate(data.paid_at) : undefined;
+        const items = normalizeItems(data.items);
+
+        return {
+          id: d.id,
+          customer_name: data.customer_name || '',
+          items,
+          total: Number(data.total) || 0,
+          notes: data.notes || '',
+          status: data.status === 'paid' ? 'paid' : 'open',
+          created_at: createdAt,
+          paid_at: paidAt,
+        } as Fiado;
+      });
+
+      // Normaliza apenas os textos, preservando as datas
+      return normalize(list);
     } catch (error) {
       console.error('Erro ao buscar fiados:', error);
       return [];
@@ -69,14 +89,18 @@ export const fiadosAPI = {
 
   create: async (data: {
     customer_name: string;
-    items: string[];
+    items: FiadoItem[];
     total?: number;
     notes?: string;
   }) => {
     const ref = collection(db, 'fiados');
     const docRef = await addDoc(ref, {
       customer_name: data.customer_name.trim(),
-      items: data.items.map((item) => item.trim()).filter(Boolean),
+      items: data.items.map((item) => ({
+        text: item.text.trim(),
+        date: Timestamp.fromDate(new Date(String(item.date).includes('T') ? item.date : `${item.date}T12:00:00`)),
+        price: Number(item.price) || 0,
+      })),
       total: Number(data.total) || 0,
       notes: data.notes?.trim() || '',
       status: 'open',
@@ -93,7 +117,13 @@ export const fiadosAPI = {
     const payload: any = { updated_at: Timestamp.now() };
 
     if (data.customer_name !== undefined) payload.customer_name = data.customer_name.trim();
-    if (data.items !== undefined) payload.items = data.items.map((item) => item.trim()).filter(Boolean);
+    if (data.items !== undefined) {
+      payload.items = data.items.map((item) => ({
+        text: item.text.trim(),
+        date: Timestamp.fromDate(new Date(String(item.date).includes('T') ? item.date : `${item.date}T12:00:00`)),
+        price: Number(item.price) || 0,
+      }));
+    }
     if (data.total !== undefined) payload.total = Number(data.total) || 0;
     if (data.notes !== undefined) payload.notes = data.notes.trim();
 

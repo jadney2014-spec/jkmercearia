@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Frontend do sistema de contabilidade para igreja",
   "private": true,
-  "homepage": "/sistema-vendas",
+  "homepage": "/",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

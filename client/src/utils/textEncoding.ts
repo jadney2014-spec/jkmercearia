@@ -27,6 +27,7 @@ export function fixUtf8MojibakeDeep<T>(value: T): T {
   }
 
   if (value && typeof value === 'object') {
+    if (value instanceof Date) return value;
     const obj = value as Record<string, unknown>;
     const out: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(obj)) {
