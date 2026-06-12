@@ -161,9 +161,18 @@ const Dashboard: React.FC = () => {
 
           {lowStock.length > 0 && (
             <div className="border border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <ExclamationTriangleIcon className="h-5 w-5 text-yellow-600" />
-                <h3 className="font-medium text-yellow-800 dark:text-yellow-200">Estoque Baixo</h3>
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <div className="flex items-center gap-2">
+                  <ExclamationTriangleIcon className="h-5 w-5 text-yellow-600" />
+                  <h3 className="font-medium text-yellow-800 dark:text-yellow-200">Estoque Baixo</h3>
+                </div>
+                <Link
+                  to={appPath('compras')}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-yellow-800 dark:text-yellow-200 bg-yellow-100 dark:bg-yellow-900/40 rounded-lg hover:bg-yellow-200 dark:hover:bg-yellow-900/60 transition-colors border border-yellow-300 dark:border-yellow-700"
+                >
+                  <ShoppingCartIcon className="h-4 w-4" />
+                  Gerar Relatório de Compra
+                </Link>
               </div>
               <div className="flex flex-wrap gap-2">
                 {lowStock.slice(0, 8).map((p) => (
@@ -179,9 +188,6 @@ const Dashboard: React.FC = () => {
                     +{lowStock.length - 8} mais
                   </Link>
                 )}
-                <Link to={appPath('compras')} className="text-xs text-yellow-700 underline ml-1">
-                  Lista de itens a comprar
-                </Link>
               </div>
             </div>
           )}

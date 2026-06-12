@@ -62,7 +62,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           { type: 'link', name: 'Produtos', href: appPath('products'), icon: CubeIcon },
           { type: 'link', name: 'Categorias', href: appPath('categories'), icon: TagIcon },
           { type: 'link', name: 'Fiados', href: appPath('fiados'), icon: ClipboardDocumentListIcon },
-          { type: 'link', name: 'Itens a Comprar', href: appPath('compras'), icon: ShoppingCartIcon },
+          { type: 'link', name: 'Lista de Compras', href: appPath('compras'), icon: ShoppingCartIcon },
         ] as NavItem[])
       : []),
 

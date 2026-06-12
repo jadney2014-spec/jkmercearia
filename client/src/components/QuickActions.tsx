@@ -5,6 +5,7 @@ import {
   ShoppingBagIcon,
   CubeIcon,
   ChartBarIcon,
+  ShoppingCartIcon,
 } from '@heroicons/react/24/outline';
 import { Link } from 'react-router-dom';
 import SafeIcon from './SafeIcon';
@@ -37,6 +38,13 @@ const QuickActions: React.FC = () => {
       icon: CubeIcon,
       href: appPath('products'),
       color: 'bg-blue-500 hover:bg-blue-600',
+    },
+    {
+      id: 'compras',
+      label: 'Lista de Compras',
+      icon: ShoppingCartIcon,
+      href: appPath('compras'),
+      color: 'bg-yellow-500 hover:bg-yellow-600',
     },
     {
       id: 'report',
