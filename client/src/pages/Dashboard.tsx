@@ -5,8 +5,11 @@ import {
   CubeIcon,
   ArrowPathIcon,
   ExclamationTriangleIcon,
+  ArrowDownTrayIcon,
+  ShoppingCartIcon,
 } from '@heroicons/react/24/outline';
 import { salesAPI, parseFirestoreDate, Sale, Product } from '../services/salesAPI';
+import { generateShoppingListPdf } from '../utils/shoppingListPdf';
 import { toast } from 'react-toastify';
 import AnimatedCard from '../components/AnimatedCard';
 import PageTransition from '../components/PageTransition';
@@ -184,10 +187,29 @@ const Dashboard: React.FC = () => {
                   </span>
                 ))}
                 {lowStock.length > 8 && (
-                  <Link to={appPath('products')} className="text-xs text-yellow-700 underline">
+                  <Link to={appPath('compras')} className="text-xs text-yellow-700 underline">
                     +{lowStock.length - 8} mais
                   </Link>
                 )}
+              </div>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Link
+                  to={appPath('compras')}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-yellow-800 dark:text-yellow-200 bg-yellow-100 dark:bg-yellow-900/40 rounded-lg hover:bg-yellow-200 dark:hover:bg-yellow-900/60 transition-colors border border-yellow-300 dark:border-yellow-700"
+                >
+                  <ShoppingCartIcon className="h-4 w-4" />
+                  Ver Lista Completa
+                </Link>
+                <button
+                  onClick={() => {
+                    generateShoppingListPdf(lowStock);
+                    toast.success('Relatório gerado com sucesso!');
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors shadow-sm"
+                >
+                  <ArrowDownTrayIcon className="h-4 w-4" />
+                  Gerar Relatório (PDF) Agora
+                </button>
               </div>
             </div>
           )}
