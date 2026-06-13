@@ -19,25 +19,60 @@ const GENDER_STYLES = {
     bg: 'bg-sky-200 dark:bg-sky-300/90',
     border: 'border-sky-300 dark:border-sky-400',
     text: 'text-sky-950',
+    label: 'text-sky-800',
+    inputBg: 'bg-sky-50',
+    inputBorder: 'border-sky-400/40',
     tape: 'bg-sky-400/70',
+    accent: 'bg-sky-400/20',
+    accentBorder: 'border-sky-400/30',
+    accentText: 'text-sky-900',
+    button: 'bg-sky-600 hover:bg-sky-700',
+    icon: 'text-sky-700',
+    hover: 'hover:bg-sky-100/50',
+    divider: 'divide-sky-400/10',
+    totalBg: 'bg-sky-400/40',
+    totalBorder: 'border-sky-500/20',
   },
   F: {
     bg: 'bg-pink-200 dark:bg-pink-300/90',
     border: 'border-pink-300 dark:border-pink-400',
     text: 'text-pink-950',
+    label: 'text-pink-800',
+    inputBg: 'bg-pink-50',
+    inputBorder: 'border-pink-400/40',
     tape: 'bg-pink-400/70',
+    accent: 'bg-pink-400/20',
+    accentBorder: 'border-pink-400/30',
+    accentText: 'text-pink-900',
+    button: 'bg-pink-600 hover:bg-pink-700',
+    icon: 'text-pink-700',
+    hover: 'hover:bg-pink-100/50',
+    divider: 'divide-pink-400/10',
+    totalBg: 'bg-pink-400/40',
+    totalBorder: 'border-pink-500/20',
   },
   O: {
     bg: 'bg-yellow-200 dark:bg-yellow-300/90',
     border: 'border-yellow-300 dark:border-yellow-400',
     text: 'text-yellow-950',
+    label: 'text-yellow-800',
+    inputBg: 'bg-yellow-50',
+    inputBorder: 'border-yellow-400/40',
     tape: 'bg-yellow-400/70',
+    accent: 'bg-yellow-400/20',
+    accentBorder: 'border-yellow-400/30',
+    accentText: 'text-yellow-900',
+    button: 'bg-yellow-600 hover:bg-yellow-700',
+    icon: 'text-yellow-700',
+    hover: 'hover:bg-yellow-100/50',
+    divider: 'divide-yellow-400/10',
+    totalBg: 'bg-yellow-400/40',
+    totalBorder: 'border-yellow-500/20',
   },
 };
 
-const getNoteStyle = (fiado: Fiado) => {
-  const gender = fiado.gender || 'O';
-  return GENDER_STYLES[gender] || GENDER_STYLES.O;
+const getNoteStyle = (gender?: string) => {
+  return GENDER_STYLES[gender as 'M' | 'F' | 'O'] || GENDER_STYLES.O;
 };
 
 const Fiados: React.FC = () => {
@@ -58,6 +93,8 @@ const Fiados: React.FC = () => {
     total: '0',
     notes: '',
   });
+
+  const currentFormStyle = getNoteStyle(form.gender);
 
   const loadData = useCallback(async () => {
     try {
@@ -265,26 +302,26 @@ const Fiados: React.FC = () => {
       {showForm && (
         <form
           onSubmit={handleCreateOrUpdate}
-          className="relative max-w-md mx-auto sm:mx-0 p-6 pt-10 rounded-sm border-2 border-yellow-300 bg-yellow-200 shadow-2xl rotate-[-0.5deg] z-50 transition-all"
+          className={`relative max-w-md mx-auto sm:mx-0 p-6 pt-10 rounded-sm border-2 shadow-2xl rotate-[-0.5deg] z-50 transition-all ${currentFormStyle.bg} ${currentFormStyle.border}`}
         >
-          <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-24 h-7 bg-yellow-400/90 rounded-sm border-b-2 border-yellow-500/30" />
-          <h3 className="font-black text-yellow-950 mb-4 text-xl uppercase tracking-tighter">
+          <div className={`absolute -top-4 left-1/2 -translate-x-1/2 w-24 h-7 rounded-sm border-b-2 border-black/10 ${currentFormStyle.tape}`} />
+          <h3 className={`font-black mb-4 text-xl uppercase tracking-tighter ${currentFormStyle.text}`}>
             {editingFiado ? '📝 Editando nota' : '📌 Nova nota'}
           </h3>
           
-          <label className="text-[10px] font-black text-yellow-800 uppercase ml-1">Cliente</label>
+          <label className={`text-[10px] font-black uppercase ml-1 ${currentFormStyle.label}`}>Cliente</label>
           <div className="flex gap-2 mb-5">
             <input
               type="text"
               placeholder="Nome do cliente"
               value={form.customer_name}
               onChange={(e) => setForm({ ...form, customer_name: e.target.value })}
-              className="flex-1 px-3 py-2 border-2 border-yellow-400/40 rounded bg-yellow-50 text-yellow-950 focus:border-yellow-600 outline-none font-bold text-lg"
+              className={`flex-1 px-3 py-2 border-2 rounded outline-none font-bold text-lg ${currentFormStyle.inputBg} ${currentFormStyle.text} ${currentFormStyle.inputBorder} focus:border-current`}
             />
             <select
               value={form.gender}
               onChange={(e) => setForm({ ...form, gender: e.target.value as any })}
-              className="px-2 py-2 border-2 border-yellow-400/40 rounded bg-yellow-50 text-yellow-950 font-bold outline-none focus:border-yellow-600"
+              className={`px-2 py-2 border-2 rounded font-bold outline-none ${currentFormStyle.inputBg} ${currentFormStyle.text} ${currentFormStyle.inputBorder} focus:border-current`}
             >
               <option value="O">👤 Outro</option>
               <option value="M">👨 Homem</option>
@@ -292,8 +329,8 @@ const Fiados: React.FC = () => {
             </select>
           </div>
 
-          <div className="bg-yellow-400/20 p-4 rounded-lg border-2 border-yellow-400/30 mb-5">
-            <p className="text-[11px] font-black text-yellow-900 uppercase mb-3 flex items-center gap-1">
+          <div className={`p-4 rounded-lg border-2 mb-5 ${currentFormStyle.accent} ${currentFormStyle.accentBorder}`}>
+            <p className={`text-[11px] font-black uppercase mb-3 flex items-center gap-1 ${currentFormStyle.accentText}`}>
               🚀 Lançamento Rápido
             </p>
             <input
@@ -301,29 +338,29 @@ const Fiados: React.FC = () => {
               placeholder="O que o cliente levou?"
               value={newItem.text}
               onChange={(e) => setNewItem({ ...newItem, text: e.target.value })}
-              className="w-full mb-3 px-3 py-2 border-2 border-yellow-400/40 rounded bg-yellow-50 text-yellow-950 outline-none font-medium"
+              className={`w-full mb-3 px-3 py-2 border-2 rounded outline-none font-medium ${currentFormStyle.inputBg} ${currentFormStyle.text} ${currentFormStyle.inputBorder}`}
             />
             <div className="flex gap-2">
               <div className="relative flex-1">
-                <CurrencyDollarIcon className="absolute left-2 top-1/2 -translate-y-1/2 h-5 w-5 text-yellow-700" />
+                <CurrencyDollarIcon className={`absolute left-2 top-1/2 -translate-y-1/2 h-5 w-5 ${currentFormStyle.icon}`} />
                 <input
                   type="text"
                   placeholder="0,00"
                   value={newItem.price}
                   onChange={(e) => setNewItem({ ...newItem, price: e.target.value })}
-                  className="w-full pl-8 pr-3 py-2 border-2 border-yellow-400/40 rounded bg-yellow-50 text-yellow-950 font-black text-lg outline-none"
+                  className={`w-full pl-8 pr-3 py-2 border-2 rounded font-black text-lg outline-none ${currentFormStyle.inputBg} ${currentFormStyle.text} ${currentFormStyle.inputBorder}`}
                 />
               </div>
               <input
                 type="date"
                 value={newItem.date}
                 onChange={(e) => setNewItem({ ...newItem, date: e.target.value })}
-                className="w-32 px-2 py-2 border-2 border-yellow-400/40 rounded bg-yellow-50 text-yellow-950 text-xs font-bold outline-none"
+                className={`w-32 px-2 py-2 border-2 rounded text-xs font-bold outline-none ${currentFormStyle.inputBg} ${currentFormStyle.text} ${currentFormStyle.inputBorder}`}
               />
               <button
                 type="button"
                 onClick={addFormItem}
-                className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 font-black shadow-lg active:scale-95 transition-transform"
+                className={`px-4 py-2 text-white rounded-lg font-black shadow-lg active:scale-95 transition-transform ${currentFormStyle.button}`}
               >
                 +
               </button>
@@ -331,19 +368,19 @@ const Fiados: React.FC = () => {
           </div>
 
           {form.items.length > 0 && (
-            <div className="mb-5 bg-yellow-50/70 rounded-lg border-2 border-yellow-400/20 max-h-48 overflow-y-auto shadow-inner">
-              <ul className="divide-y-2 divide-yellow-400/10">
+            <div className={`mb-5 rounded-lg border-2 max-h-48 overflow-y-auto shadow-inner ${currentFormStyle.inputBg} ${currentFormStyle.accentBorder}`}>
+              <ul className={`divide-y-2 ${currentFormStyle.divider}`}>
                 {form.items.map((item, index) => (
                   <li
                     key={`${item.text}-${index}`}
-                    className="flex items-center justify-between gap-2 px-4 py-2 hover:bg-yellow-100/50 transition-colors"
+                    className={`flex items-center justify-between gap-2 px-4 py-2 transition-colors ${currentFormStyle.hover}`}
                   >
                     <div className="flex flex-col">
-                      <span className="font-bold text-yellow-950 leading-tight">{item.text}</span>
-                      <span className="text-[10px] text-yellow-800/60 font-bold">📅 {formatDate(item.date)}</span>
+                      <span className={`font-bold leading-tight ${currentFormStyle.text}`}>{item.text}</span>
+                      <span className={`text-[10px] font-bold ${currentFormStyle.label}`}>📅 {formatDate(item.date)}</span>
                     </div>
                     <div className="flex items-center gap-4">
-                       <span className="font-black text-sm text-yellow-900">{formatCurrency(item.price || 0)}</span>
+                       <span className={`font-black text-sm ${currentFormStyle.accentText}`}>{formatCurrency(item.price || 0)}</span>
                        <button
                         type="button"
                         onClick={() => removeFormItem(index)}
@@ -359,26 +396,26 @@ const Fiados: React.FC = () => {
           )}
 
           <div className="grid grid-cols-2 gap-4 mb-6">
-             <div className="bg-yellow-400/40 p-3 rounded-lg border-2 border-yellow-500/20 shadow-md">
-               <label className="text-[10px] text-yellow-950 font-black uppercase block mb-1">TOTAL DEVIDO</label>
+             <div className={`p-3 rounded-lg border-2 shadow-md ${currentFormStyle.totalBg} ${currentFormStyle.totalBorder}`}>
+               <label className={`text-[10px] font-black uppercase block mb-1 ${currentFormStyle.text}`}>TOTAL DEVIDO</label>
                <div className="flex items-center gap-1">
-                 <span className="font-black text-yellow-950 text-xl">R$</span>
+                 <span className={`font-black text-xl ${currentFormStyle.text}`}>R$</span>
                  <input
                    type="text"
                    value={form.total}
                    onChange={(e) => setForm({ ...form, total: e.target.value })}
-                   className="w-full bg-transparent text-yellow-950 outline-none font-black text-2xl tracking-tighter"
+                   className={`w-full bg-transparent outline-none font-black text-2xl tracking-tighter ${currentFormStyle.text}`}
                  />
                </div>
              </div>
              <div className="flex flex-col">
-                <label className="text-[10px] text-yellow-950 font-black uppercase ml-1 block mb-1">Observação</label>
+                <label className={`text-[10px] font-black uppercase ml-1 block mb-1 ${currentFormStyle.text}`}>Observação</label>
                 <textarea
                   placeholder="..."
                   value={form.notes}
                   onChange={(e) => setForm({ ...form, notes: e.target.value })}
                   rows={2}
-                  className="w-full px-3 py-2 border-2 border-yellow-400/40 rounded bg-yellow-50 text-yellow-950 text-xs font-medium outline-none focus:border-yellow-600"
+                  className={`w-full px-3 py-2 border-2 rounded text-xs font-medium outline-none focus:border-current ${currentFormStyle.inputBg} ${currentFormStyle.text} ${currentFormStyle.inputBorder}`}
                 />
              </div>
           </div>
@@ -390,7 +427,7 @@ const Fiados: React.FC = () => {
             <button
               type="button"
               onClick={cancelForm}
-              className="px-6 py-4 border-2 border-yellow-600/30 rounded-xl text-yellow-950 hover:bg-yellow-300 font-black uppercase text-xs"
+              className={`px-6 py-4 border-2 rounded-xl hover:bg-black/5 font-black uppercase text-xs ${currentFormStyle.text} ${currentFormStyle.border}`}
             >
               Sair
             </button>
@@ -426,7 +463,7 @@ const Fiados: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-10 p-2">
           {visibleFiados.map((fiado, index) => {
-            const style = getNoteStyle(fiado);
+            const style = getNoteStyle(fiado.gender);
             const rotation = index % 2 === 0 ? 'rotate-[-1.5deg]' : 'rotate-[1.5deg]';
 
             return (
