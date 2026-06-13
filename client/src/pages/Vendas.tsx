@@ -94,7 +94,29 @@ const Vendas: React.FC = () => {
       (p.barcode && p.barcode.includes(search))
   );
 
+  const getProductPrice = useCallback((product: Product, method: string) => {
+    if (method === 'debito') return product.price_debit || product.price;
+    if (method === 'credito') return product.price_credit || product.price;
+    return product.price;
+  }, []);
+
+  // Atualiza preÃ§os no carrinho quando muda forma de pagamento
+  useEffect(() => {
+    if (cart.length === 0) return;
+    setCart(prev => prev.map(item => {
+      const product = products.find(p => p.id === item.product_id);
+      if (!product) return item;
+      const price = getProductPrice(product, paymentMethod);
+      return {
+        ...item,
+        unit_price: price,
+        subtotal: item.quantity * price
+      };
+    }));
+  }, [paymentMethod, products, getProductPrice]);
+
   const addToCart = (product: Product) => {
+    const price = getProductPrice(product, paymentMethod);
     const existing = cart.find((c) => c.product_id === product.id);
     if (existing) {
       if (existing.quantity >= product.stock) {
@@ -119,8 +141,8 @@ const Vendas: React.FC = () => {
           product_id: product.id,
           product_name: product.name,
           quantity: 1,
-          unit_price: product.price,
-          subtotal: product.price,
+          unit_price: price,
+          subtotal: price,
           maxStock: product.stock,
         },
       ]);
@@ -309,7 +331,7 @@ const Vendas: React.FC = () => {
                     {product.name}
                   </div>
                   <div className="text-green-600 font-bold mt-1">
-                    {formatCurrency(product.price)}
+                    {formatCurrency(getProductPrice(product, paymentMethod))}
                   </div>
                   <div className="text-xs text-gray-500 mt-1">
                     Estoque: {product.stock}

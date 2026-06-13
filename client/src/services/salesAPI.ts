@@ -45,6 +45,8 @@ export interface Product {
   id: string;
   name: string;
   price: number;
+  price_debit?: number;
+  price_credit?: number;
   purchase_price: number;
   stock: number;
   category_id?: string;
@@ -96,6 +98,8 @@ export const productsAPI = {
             id: d.id,
             name: data.name || '',
             price: Number(data.price) || 0,
+            price_debit: Number(data.price_debit) || Number(data.price) || 0,
+            price_credit: Number(data.price_credit) || Number(data.price) || 0,
             purchase_price: Number(data.purchase_price) || 0,
             stock: Number(data.stock) || 0,
             category_id: data.category_id || '',

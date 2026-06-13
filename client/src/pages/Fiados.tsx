@@ -14,43 +14,30 @@ import { fiadosAPI, Fiado, FiadoItem } from '../services/fiadosAPI';
 import { toast } from 'react-toastify';
 import LoadingSpinner from '../components/LoadingSpinner';
 
-const NOTE_STYLES = [
-  {
-    bg: 'bg-yellow-200 dark:bg-yellow-300/90',
-    border: 'border-yellow-300 dark:border-yellow-400',
-    text: 'text-yellow-950',
-    tape: 'bg-yellow-400/70',
-  },
-  {
-    bg: 'bg-pink-200 dark:bg-pink-300/90',
-    border: 'border-pink-300 dark:border-pink-400',
-    text: 'text-pink-950',
-    tape: 'bg-pink-400/70',
-  },
-  {
+const GENDER_STYLES = {
+  M: {
     bg: 'bg-sky-200 dark:bg-sky-300/90',
     border: 'border-sky-300 dark:border-sky-400',
     text: 'text-sky-950',
     tape: 'bg-sky-400/70',
   },
-  {
-    bg: 'bg-lime-200 dark:bg-lime-300/90',
-    border: 'border-lime-300 dark:border-lime-400',
-    text: 'text-lime-950',
-    tape: 'bg-lime-400/70',
+  F: {
+    bg: 'bg-pink-200 dark:bg-pink-300/90',
+    border: 'border-pink-300 dark:border-pink-400',
+    text: 'text-pink-950',
+    tape: 'bg-pink-400/70',
   },
-  {
-    bg: 'bg-orange-200 dark:bg-orange-300/90',
-    border: 'border-orange-300 dark:border-orange-400',
-    text: 'text-orange-950',
-    tape: 'bg-orange-400/70',
+  O: {
+    bg: 'bg-yellow-200 dark:bg-yellow-300/90',
+    border: 'border-yellow-300 dark:border-yellow-400',
+    text: 'text-yellow-950',
+    tape: 'bg-yellow-400/70',
   },
-];
+};
 
-const getNoteStyle = (id: string) => {
-  let hash = 0;
-  for (let i = 0; i < id.length; i += 1) hash = (hash + id.charCodeAt(i)) % NOTE_STYLES.length;
-  return NOTE_STYLES[hash];
+const getNoteStyle = (fiado: Fiado) => {
+  const gender = fiado.gender || 'O';
+  return GENDER_STYLES[gender] || GENDER_STYLES.O;
 };
 
 const Fiados: React.FC = () => {
@@ -66,6 +53,7 @@ const Fiados: React.FC = () => {
   });
   const [form, setForm] = useState({
     customer_name: '',
+    gender: 'O' as 'M' | 'F' | 'O',
     items: [] as FiadoItem[],
     total: '0',
     notes: '',
@@ -91,6 +79,7 @@ const Fiados: React.FC = () => {
     if (editingFiado) {
       setForm({
         customer_name: editingFiado.customer_name,
+        gender: editingFiado.gender || 'O',
         items: editingFiado.items.map(i => ({
           text: i.text,
           date: i.date instanceof Date ? i.date.toISOString().split('T')[0] : String(i.date).split('T')[0],
@@ -117,6 +106,7 @@ const Fiados: React.FC = () => {
     try {
       const data = {
         customer_name: form.customer_name,
+        gender: form.gender,
         items: form.items,
         total: Number(form.total.replace(',', '.')) || 0,
         notes: form.notes,
@@ -130,7 +120,7 @@ const Fiados: React.FC = () => {
         toast.success('Nota de fiado criada');
       }
 
-      setForm({ customer_name: '', items: [], total: '0', notes: '' });
+      setForm({ customer_name: '', gender: 'O', items: [], total: '0', notes: '' });
       setNewItem({ text: '', date: new Date().toISOString().split('T')[0], price: '' });
       setShowForm(false);
       setEditingFiado(null);
@@ -283,13 +273,24 @@ const Fiados: React.FC = () => {
           </h3>
           
           <label className="text-[10px] font-black text-yellow-800 uppercase ml-1">Cliente</label>
-          <input
-            type="text"
-            placeholder="Nome do cliente"
-            value={form.customer_name}
-            onChange={(e) => setForm({ ...form, customer_name: e.target.value })}
-            className="w-full mb-5 px-3 py-2 border-2 border-yellow-400/40 rounded bg-yellow-50 text-yellow-950 focus:border-yellow-600 outline-none font-bold text-lg"
-          />
+          <div className="flex gap-2 mb-5">
+            <input
+              type="text"
+              placeholder="Nome do cliente"
+              value={form.customer_name}
+              onChange={(e) => setForm({ ...form, customer_name: e.target.value })}
+              className="flex-1 px-3 py-2 border-2 border-yellow-400/40 rounded bg-yellow-50 text-yellow-950 focus:border-yellow-600 outline-none font-bold text-lg"
+            />
+            <select
+              value={form.gender}
+              onChange={(e) => setForm({ ...form, gender: e.target.value as any })}
+              className="px-2 py-2 border-2 border-yellow-400/40 rounded bg-yellow-50 text-yellow-950 font-bold outline-none focus:border-yellow-600"
+            >
+              <option value="O">👤 Outro</option>
+              <option value="M">👨 Homem</option>
+              <option value="F">👩 Mulher</option>
+            </select>
+          </div>
 
           <div className="bg-yellow-400/20 p-4 rounded-lg border-2 border-yellow-400/30 mb-5">
             <p className="text-[11px] font-black text-yellow-900 uppercase mb-3 flex items-center gap-1">
@@ -425,7 +426,7 @@ const Fiados: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-10 p-2">
           {visibleFiados.map((fiado, index) => {
-            const style = getNoteStyle(fiado.id);
+            const style = getNoteStyle(fiado);
             const rotation = index % 2 === 0 ? 'rotate-[-1.5deg]' : 'rotate-[1.5deg]';
 
             return (

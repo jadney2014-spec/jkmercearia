@@ -23,6 +23,8 @@ const emptyForm = {
   name: '',
   purchase_price: '',
   price: '',
+  price_debit: '',
+  price_credit: '',
   stock: '',
   category_id: '',
   barcode: '',
@@ -133,6 +135,8 @@ const Products: React.FC = () => {
       name: product.name,
       purchase_price: String(product.purchase_price || ''),
       price: String(product.price),
+      price_debit: String(product.price_debit || product.price),
+      price_credit: String(product.price_credit || product.price),
       stock: String(product.stock),
       category_id: product.category_id || '',
       barcode: product.barcode || '',
@@ -153,6 +157,8 @@ const Products: React.FC = () => {
       name: form.name.trim(),
       purchase_price: parseFloat(form.purchase_price) || 0,
       price: parseFloat(form.price) || 0,
+      price_debit: parseFloat(form.price_debit) || parseFloat(form.price) || 0,
+      price_credit: parseFloat(form.price_credit) || parseFloat(form.price) || 0,
       stock: parseInt(form.stock, 10) || 0,
       category_id: form.category_id || '',
       barcode: form.barcode.trim(),
@@ -324,27 +330,27 @@ const Products: React.FC = () => {
               Editar
             </button>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mt-4">
             <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
-              <p className="text-xs text-gray-500 uppercase">Valor pago (custo)</p>
+              <p className="text-xs text-gray-500 uppercase">Custo</p>
               <p className="text-lg font-bold text-orange-600">{formatCurrency(highlightedProduct.purchase_price)}</p>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
-              <p className="text-xs text-gray-500 uppercase">Valor de venda</p>
+              <p className="text-xs text-gray-500 uppercase">Dinheiro</p>
               <p className="text-lg font-bold text-green-600">{formatCurrency(highlightedProduct.price)}</p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
+              <p className="text-xs text-gray-500 uppercase">Débito</p>
+              <p className="text-lg font-bold text-blue-600">{formatCurrency(highlightedProduct.price_debit || highlightedProduct.price)}</p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
+              <p className="text-xs text-gray-500 uppercase">Crédito</p>
+              <p className="text-lg font-bold text-purple-600">{formatCurrency(highlightedProduct.price_credit || highlightedProduct.price)}</p>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
               <p className="text-xs text-gray-500 uppercase">Estoque</p>
               <p className="text-lg font-bold text-gray-900 dark:text-white">
                 {highlightedProduct.stock} {highlightedProduct.unit}
-              </p>
-            </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
-              <p className="text-xs text-gray-500 uppercase">Margem</p>
-              <p className="text-lg font-bold text-blue-600">
-                {marginPercent(highlightedProduct.purchase_price, highlightedProduct.price)
-                  ? `${marginPercent(highlightedProduct.purchase_price, highlightedProduct.price)}%`
-                  : '—'}
               </p>
             </div>
           </div>
@@ -363,6 +369,7 @@ const Products: React.FC = () => {
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Categoria</th>
               <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Custo</th>
               <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Venda</th>
+              <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">D/C</th>
               <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Estoque</th>
               <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Ações</th>
             </tr>
@@ -405,6 +412,10 @@ const Products: React.FC = () => {
                   </td>
                   <td className="px-4 py-3 text-right font-medium text-green-600 dark:text-green-400">
                     {formatCurrency(product.price)}
+                  </td>
+                  <td className="px-4 py-3 text-right text-[10px] text-blue-600 dark:text-blue-400">
+                    <div>D: {formatCurrency(product.price_debit || product.price)}</div>
+                    <div>C: {formatCurrency(product.price_credit || product.price)}</div>
                   </td>
                   <td className="px-4 py-3 text-right">
                     <span
@@ -483,8 +494,36 @@ const Products: React.FC = () => {
                     step="0.01"
                     min="0"
                     value={form.price}
-                    onChange={(e) => setForm({ ...form, price: e.target.value })}
+                    onChange={(e) => setForm({ ...form, price: e.target.value, price_debit: e.target.value, price_credit: e.target.value })}
                     placeholder="Seu preço de venda"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Débito (R$)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={form.price_debit}
+                    onChange={(e) => setForm({ ...form, price_debit: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Crédito (R$)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={form.price_credit}
+                    onChange={(e) => setForm({ ...form, price_credit: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>

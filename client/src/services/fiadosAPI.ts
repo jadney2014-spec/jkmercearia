@@ -28,6 +28,7 @@ export interface Fiado {
   total: number;
   notes?: string;
   status: 'open' | 'paid';
+  gender?: 'M' | 'F' | 'O';
   created_at: Date | string;
   paid_at?: Date | string;
 }
@@ -74,6 +75,7 @@ export const fiadosAPI = {
           total: Number(data.total) || 0,
           notes: data.notes || '',
           status: data.status === 'paid' ? 'paid' : 'open',
+          gender: data.gender || 'O',
           created_at: createdAt,
           paid_at: paidAt,
         } as Fiado;
@@ -92,6 +94,7 @@ export const fiadosAPI = {
     items: FiadoItem[];
     total?: number;
     notes?: string;
+    gender?: 'M' | 'F' | 'O';
   }) => {
     const ref = collection(db, 'fiados');
     const docRef = await addDoc(ref, {
@@ -103,6 +106,7 @@ export const fiadosAPI = {
       })),
       total: Number(data.total) || 0,
       notes: data.notes?.trim() || '',
+      gender: data.gender || 'O',
       status: 'open',
       created_at: Timestamp.now(),
     });
@@ -111,7 +115,7 @@ export const fiadosAPI = {
 
   update: async (
     id: string,
-    data: Partial<Pick<Fiado, 'customer_name' | 'items' | 'total' | 'notes'>>
+    data: Partial<Pick<Fiado, 'customer_name' | 'items' | 'total' | 'notes' | 'gender'>>
   ) => {
     const ref = doc(db, 'fiados', id);
     const payload: any = { updated_at: Timestamp.now() };
@@ -126,6 +130,7 @@ export const fiadosAPI = {
     }
     if (data.total !== undefined) payload.total = Number(data.total) || 0;
     if (data.notes !== undefined) payload.notes = data.notes.trim();
+    if (data.gender !== undefined) payload.gender = data.gender;
 
     await updateDoc(ref, payload);
   },
