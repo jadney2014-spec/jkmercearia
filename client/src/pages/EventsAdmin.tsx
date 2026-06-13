@@ -6,7 +6,7 @@ import {
   TrashIcon,
   PencilIcon,
   ShareIcon,
-  PlusIcon,
+  PlusCircleIcon,
   EyeIcon
 } from '@heroicons/react/24/outline';
 import { Event, EventFormData } from '../types/Event';
@@ -313,7 +313,7 @@ const EventsAdmin: React.FC = () => {
             onClick={handleCreateEvent}
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
           >
-            <PlusIcon className="h-4 w-4 mr-2" />
+            <PlusCircleIcon className="h-4 w-4 mr-2" />
             Novo Evento
           </button>
         </div>

@@ -9,7 +9,7 @@ import {
   Cog6ToothIcon,
   ShieldCheckIcon,
   PuzzlePieceIcon,
-  PlusIcon,
+  PlusCircleIcon,
 } from '@heroicons/react/24/outline';
 import { ministeriosAPI } from '../services/scalesAPI';
 import { membersAPI } from '../services/api';
@@ -247,7 +247,7 @@ const LouveMinistryPage: React.FC = () => {
         className="fixed bottom-24 right-4 h-14 w-14 rounded-2xl bg-primary-600 text-white shadow-lg flex items-center justify-center md:bottom-6"
         aria-label="Adicionar"
       >
-        <PlusIcon className="h-7 w-7" />
+        <PlusCircleIcon className="h-7 w-7" />
       </button>
     </div>
   );

@@ -3,7 +3,7 @@ import {
   ArrowDownTrayIcon,
   ArrowPathIcon,
   ShoppingCartIcon,
-  PlusIcon,
+  PlusCircleIcon,
   CheckIcon,
   MagnifyingGlassIcon,
   TagIcon,
@@ -181,7 +181,7 @@ export default function ComprasPage() {
               disabled={isAdding || !searchQuery.trim()}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2"
             >
-              {isAdding ? <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <PlusIcon className="h-5 w-5" />}
+              {isAdding ? <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <PlusCircleIcon className="h-5 w-5" />}
               Incluir
             </button>
           </div>

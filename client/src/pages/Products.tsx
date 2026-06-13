@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  PlusIcon,
+  PlusCircleIcon,
   PencilIcon,
   TrashIcon,
   MagnifyingGlassIcon,
@@ -272,7 +272,7 @@ const Products: React.FC = () => {
             onClick={openNew}
             className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
           >
-            <PlusIcon className="h-5 w-5" />
+            <PlusCircleIcon className="h-5 w-5" />
             Novo Produto
           </button>
         </div>

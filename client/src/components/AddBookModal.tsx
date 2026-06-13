@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { XMarkIcon, DocumentArrowUpIcon, PhotoIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, DocumentArrowUpIcon, PhotoIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-toastify';
 import { booksService, Livro } from '../services/booksService';
 import { compressImageFile } from '../utils/imageCompression';
@@ -393,7 +393,7 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onAddBook 
                   </>
                 ) : (
                   <>
-                    <PlusIcon className="h-4 w-4 mr-2" />
+                    <PlusCircleIcon className="h-4 w-4 mr-2" />
                     Adicionar Livro
                   </>
                 )}

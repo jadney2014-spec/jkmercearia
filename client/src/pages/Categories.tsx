@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { PlusIcon } from '@heroicons/react/24/outline';
+import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import { categoriesAPI } from '../services/api';
 import { mockDashboardData, simulateApiDelay } from '../services/mockData';
 import { useAuth } from '../firebase/AuthContext';
@@ -172,7 +172,7 @@ const Categories: React.FC = () => {
           onClick={() => setShowForm(true)}
           className="btn btn-primary flex items-center gap-2 min-h-[44px] w-full sm:w-auto justify-center"
         >
-          <PlusIcon className="h-5 w-5" />
+          <PlusCircleIcon className="h-5 w-5" />
           <span>Nova Categoria</span>
         </button>
       </div>

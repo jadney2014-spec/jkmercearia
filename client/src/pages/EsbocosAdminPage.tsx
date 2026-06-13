@@ -13,7 +13,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import {
   DocumentTextIcon,
   MagnifyingGlassIcon,
-  PlusIcon,
+  PlusCircleIcon,
   CheckCircleIcon,
   XCircleIcon,
   ArchiveBoxIcon,
@@ -173,7 +173,7 @@ const EsbocosAdminPage: React.FC = () => {
               onClick={() => setMostrarForm(!mostrarForm)}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center sm:justify-start w-full sm:w-auto"
             >
-              <PlusIcon className="h-5 w-5 mr-2" />
+              <PlusCircleIcon className="h-5 w-5 mr-2" />
               {mostrarForm ? 'Cancelar' : 'Novo Esboço'}
             </button>
           </div>
@@ -493,7 +493,7 @@ const EsbocosAdminPage: React.FC = () => {
                 onClick={() => setMostrarForm(true)}
                 className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center mx-auto"
               >
-                <PlusIcon className="h-5 w-5 mr-2" />
+                <PlusCircleIcon className="h-5 w-5 mr-2" />
                 Adicionar Primeiro Esboço
               </button>
             )}

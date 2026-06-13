@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  PlusIcon,
+  PlusCircleIcon,
   ShoppingBagIcon,
   CubeIcon,
   ChartBarIcon,
@@ -95,7 +95,7 @@ const QuickActions: React.FC = () => {
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
       >
-        <PlusIcon className="h-6 w-6" />
+        <PlusCircleIcon className="h-6 w-6" />
       </motion.button>
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  PlusIcon,
+  PlusCircleIcon,
   TrashIcon,
   ShoppingCartIcon,
   MagnifyingGlassIcon,
@@ -143,7 +143,7 @@ const ListaManual: React.FC = () => {
               disabled={isAdding || !searchQuery.trim()}
               className="px-6 py-3 bg-green-600 text-white rounded-xl font-black hover:bg-green-700 disabled:opacity-50 transition-all flex items-center gap-2 shadow-lg active:scale-95"
             >
-              {isAdding ? <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <PlusIcon className="h-6 w-6" />}
+              {isAdding ? <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <PlusCircleIcon className="h-6 w-6" />}
               ADICIONAR
             </button>
           </div>

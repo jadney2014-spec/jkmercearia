@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { PlusIcon, CalendarIcon } from '@heroicons/react/24/outline';
+import { PlusCircleIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../firebase/AuthContext';
 import { eventsAPI } from '../services/api';
 import EventForm from '../components/EventForm';
@@ -179,7 +179,7 @@ const Events: React.FC = () => {
             onClick={handleCreateEvent}
             className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
           >
-            <PlusIcon className="h-4 w-4 mr-2" />
+            <PlusCircleIcon className="h-4 w-4 mr-2" />
             Novo Evento
           </button>
         </div>

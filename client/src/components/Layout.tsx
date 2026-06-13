@@ -6,6 +6,7 @@ import { NotificationCenter } from '../contexts/NotificationContext';
 import ThemeToggle from './ThemeToggle';
 import TabTransition from './TabTransition';
 import OfflineIndicator from './OfflineIndicator';
+import SafeIcon from './SafeIcon';
 import { usePreloadComponents } from '../hooks/usePreloadComponents';
 import { APP_NAME, appPath } from '../constants/app';
 import {
@@ -21,7 +22,7 @@ import {
   UsersIcon,
   ClipboardDocumentListIcon,
   ShoppingCartIcon,
-  PlusIcon,
+  PlusCircleIcon,
 } from '@heroicons/react/24/outline';
 
 interface NavLink {
@@ -64,7 +65,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           { type: 'link', name: 'Categorias', href: appPath('categories'), icon: TagIcon },
           { type: 'link', name: 'Fiados', href: appPath('fiados'), icon: ClipboardDocumentListIcon },
           { type: 'link', name: 'Lista de Compras', href: appPath('compras'), icon: ShoppingCartIcon },
-          { type: 'link', name: 'Lista de Feira', href: appPath('lista-manual'), icon: PlusIcon },
+          { type: 'link', name: 'Lista de Feira', href: appPath('lista-manual'), icon: PlusCircleIcon },
         ] as NavItem[])
       : []),
 
@@ -84,7 +85,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const renderNav = () =>
     navigation.map((item, index) => {
       if (item.type === 'link') {
-        const Icon = item.icon;
         return (
           <Link
             key={`${item.href}-${index}`}
@@ -96,7 +96,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white'
             }`}
           >
-            <Icon className="mr-3 h-5 w-5 flex-shrink-0" />
+            <SafeIcon icon={item.icon} className="mr-3 h-5 w-5 flex-shrink-0" />
             <span className="flex-1">{item.name}</span>
           </Link>
         );
@@ -113,7 +113,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const BrandHeader = () => (
     <div className="flex items-center gap-x-3">
       <div className="h-8 w-8 rounded-lg bg-green-600 flex items-center justify-center">
-        <ShoppingBagIcon className="h-5 w-5 text-white" />
+        <SafeIcon icon={ShoppingBagIcon} className="h-5 w-5 text-white" />
       </div>
       <div>
         <h1 className="text-lg font-bold text-gray-700 dark:text-gray-300">{APP_NAME}</h1>
@@ -135,7 +135,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               onClick={() => setSidebarOpen(false)}
               className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
             >
-              <XMarkIcon className="h-6 w-6" />
+              <SafeIcon icon={XMarkIcon} className="h-6 w-6" />
             </button>
           </div>
           <nav className="flex-1 space-y-1 px-2 py-4 overflow-y-auto">{renderNav()}</nav>
@@ -161,7 +161,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             onClick={() => setSidebarOpen(true)}
             aria-label="Abrir menu"
           >
-            <Bars3Icon className="h-6 w-6" />
+            <SafeIcon icon={Bars3Icon} className="h-6 w-6" />
           </button>
 
           <div className="flex flex-1 gap-x-2 self-stretch sm:gap-x-4 lg:gap-x-6">

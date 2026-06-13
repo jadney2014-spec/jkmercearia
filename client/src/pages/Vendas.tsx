@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  PlusIcon,
+  PlusCircleIcon,
   MinusIcon,
   TrashIcon,
   ShoppingCartIcon,
@@ -384,7 +384,7 @@ const Vendas: React.FC = () => {
                           onClick={() => updateQuantity(item.product_id, 1)}
                           className="p-1 rounded bg-gray-100 dark:bg-gray-700 hover:bg-gray-200"
                         >
-                          <PlusIcon className="h-3 w-3" />
+                          <PlusCircleIcon className="h-3 w-3" />
                         </button>
                         <button
                           onClick={() => removeFromCart(item.product_id)}

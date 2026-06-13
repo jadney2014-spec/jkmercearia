@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  PlusIcon,
+  PlusCircleIcon,
   PencilIcon,
   TrashIcon,
   UserPlusIcon,
@@ -657,7 +657,7 @@ const CellGroupsAdmin: React.FC = () => {
                   </>
                 ) : (
                   <>
-                    <PlusIcon className="h-5 w-5 mr-2" />
+                    <PlusCircleIcon className="h-5 w-5 mr-2" />
                     Adicionar Membro
                   </>
                 )}

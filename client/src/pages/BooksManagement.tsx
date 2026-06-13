@@ -13,7 +13,7 @@ import {
   EyeIcon,
   CalendarIcon,
   StarIcon,
-  PlusIcon,
+  PlusCircleIcon,
   TrashIcon,
   PencilIcon
 } from '@heroicons/react/24/outline';
@@ -202,7 +202,7 @@ const BooksManagement: React.FC = () => {
                 }}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center w-full sm:w-auto"
               >
-                <PlusIcon className="h-5 w-5 mr-2" />
+                <PlusCircleIcon className="h-5 w-5 mr-2" />
                 Adicionar Livro
               </button>
             </div>
@@ -446,7 +446,7 @@ const BooksManagement: React.FC = () => {
                 }}
                 className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center mx-auto"
               >
-                <PlusIcon className="h-5 w-5 mr-2" />
+                <PlusCircleIcon className="h-5 w-5 mr-2" />
                 Adicionar Primeiro Livro
               </button>
             )}

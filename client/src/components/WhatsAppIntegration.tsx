@@ -10,7 +10,7 @@ import {
   PlayIcon,
   PauseIcon,
   TrashIcon,
-  PlusIcon,
+  PlusCircleIcon,
   EyeIcon,
   EyeSlashIcon,
   ClockIcon,
@@ -415,7 +415,7 @@ Que Deus abençoe e fortaleça você! ✨
             onClick={() => setShowContactForm(true)}
             className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
           >
-            <PlusIcon className="h-5 w-5" />
+            <PlusCircleIcon className="h-5 w-5" />
             <span>Novo Contato</span>
           </button>
         </div>

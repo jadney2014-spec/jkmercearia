@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  PlusIcon,
+  PlusCircleIcon,
   CheckCircleIcon,
   ArchiveBoxIcon,
   TrashIcon,
@@ -138,7 +138,7 @@ const Fiados: React.FC = () => {
   const cancelForm = () => {
     setShowForm(false);
     setEditingFiado(null);
-    setForm({ customer_name: '', items: [], total: '0', notes: '' });
+    setForm({ customer_name: '', gender: 'O', items: [], total: '0', notes: '' });
     setNewItem({ text: '', date: new Date().toISOString().split('T')[0], price: '' });
   };
 
@@ -253,11 +253,11 @@ const Fiados: React.FC = () => {
           onClick={() => {
             setShowForm(true);
             setEditingFiado(null);
-            setForm({ customer_name: '', items: [], total: '0', notes: '' });
+            setForm({ customer_name: '', gender: 'O', items: [], total: '0', notes: '' });
           }}
           className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-bold shadow-md"
         >
-          <PlusIcon className="h-5 w-5" />
+          <PlusCircleIcon className="h-5 w-5" />
           Nova nota
         </button>
       </div>
