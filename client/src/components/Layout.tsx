@@ -112,8 +112,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const BrandHeader = () => (
     <div className="flex items-center gap-x-3">
-      <div className="h-8 w-8 rounded-lg bg-green-600 flex items-center justify-center">
-        <SafeIcon icon={ShoppingBagIcon} className="h-5 w-5 text-white" />
+      <div className="h-10 w-10 rounded-lg flex items-center justify-center overflow-hidden">
+        <img src="/img/ICONE-RESGATE.png" alt="JK" className="h-full w-full object-contain" />
       </div>
       <div>
         <h1 className="text-lg font-bold text-gray-700 dark:text-gray-300">{APP_NAME}</h1>

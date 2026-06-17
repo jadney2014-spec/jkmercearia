@@ -6,15 +6,22 @@ import {
   MagnifyingGlassIcon,
   TagIcon,
   ArrowDownTrayIcon,
+  CheckCircleIcon,
 } from '@heroicons/react/24/outline';
+import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 import { productsAPI, Product } from '../services/salesAPI';
 import { shoppingAPI } from '../services/shoppingAPI';
 import { generateShoppingListPdf } from '../utils/shoppingListPdf';
 import { toast } from 'react-toastify';
 import LoadingSpinner from '../components/LoadingSpinner';
 
+interface PlannedProduct extends Product {
+  plannedId: string;
+  checked: boolean;
+}
+
 const ListaManual: React.FC = () => {
-  const [plannedProducts, setPlannedProducts] = useState<Product[]>([]);
+  const [plannedProducts, setPlannedProducts] = useState<PlannedProduct[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
@@ -23,14 +30,28 @@ const ListaManual: React.FC = () => {
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      const [plannedIds, all] = await Promise.all([
-        shoppingAPI.getPlannedProductIds(),
+      const [plannedItems, all] = await Promise.all([
+        shoppingAPI.getPlannedProducts(),
         productsAPI.getAll()
       ]);
       
       setAllProducts(all);
-      const filtered = all.filter(p => plannedIds.includes(p.id));
-      setPlannedProducts(filtered.sort((a, b) => a.name.localeCompare(b.name)));
+      
+      const filtered: PlannedProduct[] = plannedItems.map(item => {
+        const product = all.find(p => p.id === item.productId);
+        if (!product) return null;
+        return {
+          ...product,
+          plannedId: item.id,
+          checked: item.checked
+        };
+      }).filter((p): p is PlannedProduct => p !== null);
+
+      setPlannedProducts(filtered.sort((a, b) => {
+        // Ordenar primeiro por não-marcados, depois alfabeticamente
+        if (a.checked !== b.checked) return a.checked ? 1 : -1;
+        return a.name.localeCompare(b.name);
+      }));
     } catch {
       toast.error('Erro ao carregar lista manual');
     } finally {
@@ -86,6 +107,41 @@ const ListaManual: React.FC = () => {
     }
   };
 
+  const handleToggleCheck = async (plannedId: string, currentStatus: boolean) => {
+    try {
+      const newStatus = !currentStatus;
+      await shoppingAPI.toggleCheck(plannedId, newStatus);
+      
+      setPlannedProducts(prev => {
+        const updated = prev.map(p => 
+          p.plannedId === plannedId ? { ...p, checked: newStatus } : p
+        );
+        return updated.sort((a, b) => {
+          if (a.checked !== b.checked) return a.checked ? 1 : -1;
+          return a.name.localeCompare(b.name);
+        });
+      });
+    } catch {
+      toast.error('Erro ao marcar item');
+    }
+  };
+
+  const handleClearAll = async () => {
+    if (plannedProducts.length === 0) return;
+    if (!window.confirm('Deseja limpar todos os itens da lista de feira?')) return;
+    
+    try {
+      setLoading(true);
+      await shoppingAPI.clearAllPlanned();
+      setPlannedProducts([]);
+      toast.success('Lista limpa com sucesso');
+    } catch {
+      toast.error('Erro ao limpar lista');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleExportPdf = () => {
     if (plannedProducts.length === 0) {
       toast.info('A lista está vazia');
@@ -113,13 +169,24 @@ const ListaManual: React.FC = () => {
             Monte sua lista de compras manualmente para o fornecedor ou mercado
           </p>
         </div>
-        <button
-          onClick={handleExportPdf}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold transition-colors shadow-sm"
-        >
-          <ArrowDownTrayIcon className="h-4 w-4" />
-          Gerar PDF da Lista
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          {plannedProducts.length > 0 && (
+            <button
+              onClick={handleClearAll}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-600 hover:text-white dark:hover:bg-red-600 dark:hover:text-white font-bold transition-all shadow-sm border border-red-200 dark:border-red-800"
+            >
+              <TrashIcon className="h-4 w-4" />
+              Limpar Lista
+            </button>
+          )}
+          <button
+            onClick={handleExportPdf}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold transition-colors shadow-sm"
+          >
+            <ArrowDownTrayIcon className="h-4 w-4" />
+            Gerar PDF da Lista
+          </button>
+        </div>
       </div>
 
       <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
@@ -178,20 +245,36 @@ const ListaManual: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {plannedProducts.map((p) => (
           <div 
-            key={p.id}
-            className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-xl border-2 border-gray-100 dark:border-gray-700 shadow-sm hover:border-blue-400 dark:hover:border-blue-500 transition-all group"
+            key={p.plannedId}
+            onClick={() => handleToggleCheck(p.plannedId, p.checked)}
+            className={`flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-xl border-2 transition-all group cursor-pointer ${
+              p.checked 
+                ? 'border-green-100 dark:border-green-900/30 opacity-60' 
+                : 'border-gray-100 dark:border-gray-700 shadow-sm hover:border-blue-400 dark:hover:border-blue-500'
+            }`}
           >
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
-                <ShoppingCartIcon className="h-5 w-5" />
+              <div className={`p-2 rounded-lg transition-colors ${
+                p.checked 
+                  ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400' 
+                  : 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+              }`}>
+                {p.checked ? <CheckCircleIconSolid className="h-5 w-5" /> : <CheckCircleIcon className="h-5 w-5" />}
               </div>
               <div>
-                <p className="font-bold text-gray-900 dark:text-white leading-tight">{p.name}</p>
+                <p className={`font-bold leading-tight transition-all ${
+                  p.checked 
+                    ? 'text-gray-400 dark:text-gray-500 line-through' 
+                    : 'text-gray-900 dark:text-white'
+                }`}>{p.name}</p>
                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Estoque: {p.stock} {p.unit || 'un'}</p>
               </div>
             </div>
             <button
-              onClick={() => handleRemove(p.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleRemove(p.id);
+              }}
               className="p-2 text-gray-400 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100"
               title="Remover da lista"
             >

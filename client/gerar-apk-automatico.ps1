@@ -22,12 +22,33 @@ if (-not (Test-Path "package.json")) {
 # Verificar Java
 $javaCmd = Get-Command java -ErrorAction SilentlyContinue
 if (-not $javaCmd) {
+    # Tentar caminhos comuns se nao estiver no PATH
+    $commonJavaPaths = @(
+        "..\jdk17\jdk-17*\bin\java.exe",
+        "C:\Program Files\Java\jdk-26.0.1\bin\java.exe",
+        "C:\Program Files\Eclipse Adoptium\jdk-17*\bin\java.exe",
+        "C:\Program Files\Java\jdk-17*\bin\java.exe"
+    )
+    foreach ($p in $commonJavaPaths) {
+        $found = Get-ChildItem -Path $p -ErrorAction SilentlyContinue | Select-Object -First 1
+        if ($found) {
+            $javaCmd = @{ Source = $found.FullName }
+            break
+        }
+    }
+}
+
+if (-not $javaCmd) {
     Write-Host "ERRO: Java nao encontrado!" -ForegroundColor Red
     Write-Host "   Instale o Java JDK 11 ou superior" -ForegroundColor Yellow
     exit 1
 }
 
-$javaHome = Split-Path (Split-Path $javaCmd.Source)
+if ($javaCmd.Source) {
+    $javaHome = Split-Path (Split-Path $javaCmd.Source)
+} else {
+    $javaHome = Split-Path (Split-Path $javaCmd.Path)
+}
 $keytool = Join-Path $javaHome "bin\keytool.exe"
 $jarsigner = Join-Path $javaHome "bin\jarsigner.exe"
 
@@ -91,6 +112,10 @@ Write-Host ""
 Write-Host "PASSO 3: Gerando APK com Gradle..." -ForegroundColor Yellow
 Write-Host "   Isso pode levar alguns minutos..." -ForegroundColor Gray
 Write-Host ""
+
+# Configurar JAVA_HOME para o Gradle
+$env:JAVA_HOME = $javaHome
+$env:Path = "$javaHome\bin;$env:Path"
 
 Set-Location android
 

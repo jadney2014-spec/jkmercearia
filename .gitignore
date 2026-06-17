@@ -108,3 +108,12 @@ Thumbs.db
 
 # Uploads
 uploads/
+
+# JDK and Installers (Exceed 100MB limit)
+jdk17.zip
+java17.msi
+jdk17/
+client/jdk17/
+*.msi
+*.zip
+*.apk

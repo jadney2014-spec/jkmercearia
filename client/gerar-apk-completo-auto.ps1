@@ -180,6 +180,13 @@ if ($signedApk) {
     $finalPath = "app-release-assinado-$timestamp.apk"
     Copy-Item $signedApk $finalPath -Force
     
+    # Copiar para a Area de Trabalho para facil acesso
+    $desktopPath = "C:\Users\Jadney e Kele\OneDrive\Área de Trabalho\APK_JK_MERCEARIA"
+    if (Test-Path $desktopPath) {
+        Copy-Item $finalPath (Join-Path $desktopPath $finalPath) -Force
+        Write-Host "✅ Copiado para a Área de Trabalho!" -ForegroundColor Green
+    }
+    
     $size = [math]::Round((Get-Item $finalPath).Length / 1MB, 2)
     
     Write-Host ""

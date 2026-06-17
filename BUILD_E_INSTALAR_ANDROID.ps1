@@ -83,9 +83,16 @@ Pop-Location
 $debugApk = Join-Path $clientDir 'android\app\build\outputs\apk\debug\app-debug.apk'
 Ensure-File -Path $debugApk -Label 'APK Debug'
 
-# 6) Mostrar caminho do APK gerado (sem ADB)
+# 6) Mostrar caminho do APK gerado e copiar para a Area de Trabalho
 Write-Host "" 
-Write-Host "[6/6] APK gerado (sem instalar via ADB)" -ForegroundColor Yellow
+Write-Host "[6/6] APK gerado. Copiando para local de facil acesso..." -ForegroundColor Yellow
+
+# Copiar para a Area de Trabalho para facil acesso
+$desktopPath = "C:\Users\Jadney e Kele\OneDrive\Área de Trabalho\APK_JK_MERCEARIA"
+if (Test-Path $desktopPath) {
+    Copy-Item $debugApk (Join-Path $desktopPath "app-debug-$(Get-Date -Format 'yyyyMMdd-HHmmss').apk") -Force
+    Write-Host "✅ Copiado para: Área de Trabalho > APK_JK_MERCEARIA" -ForegroundColor Green
+}
 
 Write-Host "" 
 Write-Host "==============================================" -ForegroundColor Green

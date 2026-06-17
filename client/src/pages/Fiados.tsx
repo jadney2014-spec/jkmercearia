@@ -119,7 +119,7 @@ const Fiados: React.FC = () => {
         gender: editingFiado.gender || 'O',
         items: editingFiado.items.map(i => ({
           text: i.text,
-          date: i.date instanceof Date ? i.date.toISOString().split('T')[0] : String(i.date).split('T')[0],
+          date: i.date instanceof Date ? i.date.toISOString() : String(i.date),
           price: i.price || 0
         })),
         total: editingFiado.total.toFixed(2),
@@ -221,27 +221,16 @@ const Fiados: React.FC = () => {
   const formatDate = (date?: Date | string) => {
     if (!date) return '—';
     try {
-      // Se for um objeto Date, extraímos as partes locais para evitar fuso
-      if (date instanceof Date) {
-        const d = date.getDate().toString().padStart(2, '0');
-        const m = (date.getMonth() + 1).toString().padStart(2, '0');
-        const y = date.getFullYear();
-        return `${d}/${m}/${y}`;
-      }
+      const dObj = date instanceof Date ? date : new Date(date);
+      if (isNaN(dObj.getTime())) return '—';
 
-      // Se for string YYYY-MM-DD (como as que salvamos agora)
-      if (typeof date === 'string' && date.includes('-')) {
-        const parts = date.split('T')[0].split('-');
-        if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
-      }
-      
-      // Tentativa final com new Date
-      const d = new Date(date);
-      if (!isNaN(d.getTime())) {
-         return d.toLocaleDateString('pt-BR');
-      }
-      
-      return '—';
+      const d = dObj.getDate().toString().padStart(2, '0');
+      const m = (dObj.getMonth() + 1).toString().padStart(2, '0');
+      const y = dObj.getFullYear();
+      const h = dObj.getHours().toString().padStart(2, '0');
+      const min = dObj.getMinutes().toString().padStart(2, '0');
+
+      return `${d}/${m}/${y} ${h}:${min}`;
     } catch {
       return '—';
     }
@@ -254,13 +243,20 @@ const Fiados: React.FC = () => {
     const price = Number(newItem.price.replace(',', '.')) || 0;
     const currentTotal = Number(form.total.replace(',', '.')) || 0;
     
+    // Se a data escolhida for hoje, incluímos o horário atual
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    const isToday = newItem.date === todayStr;
+    
+    const itemDate = isToday ? now.toISOString() : `${newItem.date}T12:00:00`;
+    
     setForm((prev) => ({ 
       ...prev, 
-      items: [...prev.items, { text, date: newItem.date, price }],
+      items: [...prev.items, { text, date: itemDate, price }],
       total: (currentTotal + price).toFixed(2)
     }));
     
-    setNewItem({ text: '', date: new Date().toISOString().split('T')[0], price: '' });
+    setNewItem({ text: '', date: todayStr, price: '' });
   };
 
   const removeFormItem = (index: number) => {

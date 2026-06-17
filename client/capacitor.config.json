@@ -1,6 +1,6 @@
 {
-  "appId": "com.comunidaderesgate.contabilidade",
-  "appName": "Resgate",
+  "appId": "com.jkmercearia.app",
+  "appName": "JK Mercearia",
   "webDir": "build",
   "bundledWebRuntime": false,
   "server": {

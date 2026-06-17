@@ -26,11 +26,13 @@ export default function ComprasPage() {
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      const [lowStock, plannedIds, all] = await Promise.all([
+      const [lowStock, plannedItems, all] = await Promise.all([
         salesAPI.getLowStockProducts(),
-        shoppingAPI.getPlannedProductIds(),
+        shoppingAPI.getPlannedProducts(),
         productsAPI.getAll()
       ]);
+
+      const plannedIds = plannedItems.map(i => i.productId);
       
       setAllProducts(all);
       const plannedProducts = all.filter(p => plannedIds.includes(p.id) && !lowStock.find(ls => ls.id === p.id));

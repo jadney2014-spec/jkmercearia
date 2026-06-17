@@ -118,8 +118,8 @@ const LoginFirebase: React.FC = () => {
       <div className="max-w-md w-full">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden">
           <div className="bg-gradient-to-r from-green-600 to-emerald-600 px-8 py-10 text-center">
-            <div className="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm mb-4">
-              <EnvelopeIcon className="h-10 w-10 text-white" />
+            <div className="mx-auto h-24 w-24 flex items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm mb-4 overflow-hidden">
+              <img src="/img/ICONE-RESGATE.png" alt="JK Logo" className="h-full w-full object-contain p-1" />
             </div>
             <h2 className="text-2xl font-bold text-white">Sistema de Vendas</h2>
             <p className="mt-2 text-green-100 text-sm">JK Mercearia — Acesso por e-mail</p>
