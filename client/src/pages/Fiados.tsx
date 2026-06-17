@@ -108,6 +108,30 @@ const Fiados: React.FC = () => {
     }
   }, []);
 
+  const handleQuickAdd = async (fiado: Fiado, itemText: string, itemPrice: number) => {
+    try {
+      const now = new Date();
+      const newItem: FiadoItem = {
+        text: itemText,
+        date: now.toISOString(),
+        price: itemPrice
+      };
+      
+      const updatedItems = [...fiado.items, newItem];
+      const updatedTotal = fiado.total + itemPrice;
+      
+      await fiadosAPI.update(fiado.id, {
+        items: updatedItems,
+        total: updatedTotal
+      });
+      
+      toast.success(`${itemText} adicionado!`);
+      await loadData();
+    } catch {
+      toast.error('Erro ao adicionar item');
+    }
+  };
+
   useEffect(() => {
     loadData();
   }, [loadData]);
@@ -329,6 +353,29 @@ const Fiados: React.FC = () => {
             <p className={`text-[11px] font-black uppercase mb-3 flex items-center gap-1 ${currentFormStyle.accentText}`}>
               🚀 Lançamento Rápido
             </p>
+            
+            {/* Sugestões baseadas em itens já existentes nesta nota */}
+            {form.items.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-3">
+                {Array.from(new Set(form.items.map(i => i.text))).slice(0, 5).map(text => {
+                  const lastItem = [...form.items].reverse().find(i => i.text === text);
+                  const lastPrice = lastItem?.price || 0;
+                  return (
+                    <button
+                      key={text}
+                      type="button"
+                      onClick={() => {
+                        setNewItem({ ...newItem, text, price: lastPrice.toString() });
+                      }}
+                      className={`text-[10px] px-2 py-1 rounded-full border border-current opacity-70 hover:opacity-100 font-bold transition-all ${currentFormStyle.text}`}
+                    >
+                      {text}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
             <input
               type="text"
               placeholder="O que o cliente levou?"
@@ -494,20 +541,46 @@ const Fiados: React.FC = () => {
 
                 <div className="space-y-3 mb-8 bg-black/5 p-4 rounded-xl border-2 border-black/5 shadow-inner min-h-[80px]">
                    <p className="text-[9px] uppercase font-black opacity-30 mb-2 border-b-2 border-current/10 pb-1 tracking-widest">Resumo da Conta:</p>
-                  {fiado.items.map((item, itemIndex) => (
+                  {Object.values(fiado.items.reduce((acc, item) => {
+                    const key = item.text.trim();
+                    if (!acc[key]) {
+                      acc[key] = { text: key, count: 1, totalPrice: item.price || 0, latestDate: item.date, originalPrice: item.price || 0 };
+                    } else {
+                      acc[key].count += 1;
+                      acc[key].totalPrice += item.price || 0;
+                      if (new Date(item.date) > new Date(acc[key].latestDate)) {
+                        acc[key].latestDate = item.date;
+                      }
+                    }
+                    return acc;
+                  }, {} as Record<string, { text: string; count: number; totalPrice: number; latestDate: Date | string; originalPrice: number }>)).map((group) => (
                     <div
-                      key={`${fiado.id}-${itemIndex}`}
+                      key={`${fiado.id}-${group.text}`}
                       className="flex items-center justify-between gap-2 border-l-4 border-current/20 pl-3 py-1 bg-white/10 rounded-r-md"
                     >
                       <div className="flex flex-col">
-                        <span className="font-black text-sm leading-tight">{item.text}</span>
+                        <span className="font-black text-sm leading-tight">
+                          {group.text} {group.count > 1 && <span className="text-[10px] opacity-60">({group.count}x)</span>}
+                        </span>
                         <span className="text-[9px] font-bold opacity-50 uppercase">
-                           📅 {formatDate(item.date)}
+                           Último: {formatDate(group.latestDate)}
                         </span>
                       </div>
-                      {item.price && item.price > 0 ? (
-                        <span className="font-black text-xs opacity-90">{formatCurrency(item.price)}</span>
-                      ) : null}
+                      <div className="flex items-center gap-2">
+                        <span className="font-black text-xs opacity-90 whitespace-nowrap">{formatCurrency(group.totalPrice)}</span>
+                        {fiado.status === 'open' && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleQuickAdd(fiado, group.text, group.originalPrice);
+                            }}
+                            className="p-1 hover:bg-white/30 rounded-full transition-colors border border-current/10"
+                            title="Adicionar mais um deste"
+                          >
+                            <PlusCircleIcon className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
