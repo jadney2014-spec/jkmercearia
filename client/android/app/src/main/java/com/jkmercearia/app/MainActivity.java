@@ -1,4 +1,4 @@
-package com.comunidaderesgate.app;
+package com.jkmercearia.app;
 
 import com.getcapacitor.BridgeActivity;
 

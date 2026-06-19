@@ -17,19 +17,45 @@ android {
         }
     }
     // Configuração de assinatura
-    def keystorePropertiesFile = rootProject.file("../keystore.properties")
+    def keystorePropertiesFile = rootProject.file("keystore.properties")
+    if (!keystorePropertiesFile.exists()) {
+        keystorePropertiesFile = rootProject.file("../keystore.properties")
+    }
+    
     def keystoreProperties = new Properties()
     if (keystorePropertiesFile.exists()) {
         keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+        println "JK-DEBUG: keystore.properties loaded from: " + keystorePropertiesFile.absolutePath
+        println "JK-DEBUG: Properties size: " + keystoreProperties.size()
+        keystoreProperties.each { k, v ->
+            println "JK-DEBUG:   key='" + k + "' value='" + v + "'"
+        }
+    } else {
+        println "JK-DEBUG: keystore.properties NOT FOUND!"
     }
 
     signingConfigs {
         release {
-            if (keystorePropertiesFile.exists()) {
-                storeFile file("../app/" + keystoreProperties['storeFile'])
-                storePassword keystoreProperties['storePassword']
-                keyAlias keystoreProperties['keyAlias']
-                keyPassword keystoreProperties['keyPassword']
+            def storeFileVal = keystoreProperties.getProperty('storeFile') ?: keystoreProperties['storeFile']
+            def storePasswordVal = keystoreProperties.getProperty('storePassword') ?: keystoreProperties['storePassword']
+            def keyAliasVal = keystoreProperties.getProperty('keyAlias') ?: keystoreProperties['keyAlias']
+            def keyPasswordVal = keystoreProperties.getProperty('keyPassword') ?: keystoreProperties['keyPassword']
+            
+            if (keystorePropertiesFile.exists() && storeFileVal) {
+                def keystoreFile = file(storeFileVal) // tenta na pasta app/
+                if (!keystoreFile.exists()) {
+                    keystoreFile = file("../app/" + storeFileVal)
+                }
+                println "JK-DEBUG: Using keystore file: " + keystoreFile.absolutePath + " (exists: " + keystoreFile.exists() + ")"
+                
+                storeFile keystoreFile
+                storePassword storePasswordVal
+                keyAlias keyAliasVal
+                keyPassword keyPasswordVal
+                v1SigningEnabled true
+                v2SigningEnabled true
+            } else {
+                println "JK-DEBUG: Signing config release not configured because properties were missing. storeFileVal=" + storeFileVal
             }
         }
     }

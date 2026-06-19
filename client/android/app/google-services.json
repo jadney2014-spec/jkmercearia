@@ -1,38 +1,24 @@
 {
   "project_info": {
-    "project_number": "587928941365",
-    "project_id": "comunidaderesgate-82655",
-    "storage_bucket": "comunidaderesgate-82655.firebasestorage.app"
+    "project_number": "970845795439",
+    "project_id": "jkmercearia-2865",
+    "storage_bucket": "jkmercearia-2865.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:587928941365:android:d8a4e442fcf7d4fe92d27c",
+        "mobilesdk_app_id": "1:970845795439:android:a1b2c3d4e5f6g7h8i9j0k1",
         "android_client_info": {
-          "package_name": "com.comunidaderesgate.app"
+          "package_name": "com.jkmercearia.app"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "587928941365-u3gtbh6nqcj9jkb1rsjtr0qvspt8mpqu.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDTSrwYU6Fcn5m2tMc9TDI8Qwx9RbzCYkU"
+          "current_key": "AIzaSyD2RFc4wCVXzqDbIl7WXMK_FubRVQO2rDg"
         }
       ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "587928941365-u3gtbh6nqcj9jkb1rsjtr0qvspt8mpqu.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
+      "services": {}
     }
   ],
   "configuration_version": "1"

@@ -13,8 +13,8 @@
   },
   "android": {
     "buildOptions": {
-      "keystorePath": "android.keystore",
-      "keystoreAlias": "resgate-contabilidade",
+      "keystorePath": "release.keystore",
+      "keystoreAlias": "key0",
       "keystorePassword": "",
       "keystoreAliasPassword": ""
     },
@@ -32,8 +32,8 @@
     ]
   },
   "ios": {
-    "scheme": "Resgate",
-    "bundleIdentifier": "com.comunidaderesgate.contabilidade",
+    "scheme": "JKMercearia",
+    "bundleIdentifier": "com.jkmercearia.app",
     "minimumVersion": "13.0",
     "targetVersion": "17.0",
     "permissions": {
@@ -55,7 +55,7 @@
       "backgroundColor": "#1e40af"
     },
     "App": {
-      "appendUserAgent": "Resgate/1.0"
+      "appendUserAgent": "JKMercearia/1.0"
     },
     "PushNotifications": {
       "presentationOptions": ["badge", "sound", "alert"]
