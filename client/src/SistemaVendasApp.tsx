@@ -22,6 +22,7 @@ const Categories = lazyWithRetry(() => import('./pages/Categories'));
 const Welcome = lazyWithRetry(() => import('./pages/Welcome'));
 const Fiados = lazyWithRetry(() => import('./pages/Fiados'));
 const Reports = lazyWithRetry(() => import('./pages/Reports'));
+const Payments = lazyWithRetry(() => import('./pages/Payments'));
 const AdminsAdmin = lazyWithRetry(() => import('./pages/AdminsAdmin'));
 
 function SistemaVendasApp() {
@@ -125,6 +126,15 @@ function SistemaVendasApp() {
                 element={
                   <RoleProtectedRoute allow={['admin', 'vendedor', 'tesouraria']}>
                     <Compras />
+                  </RoleProtectedRoute>
+                }
+              />
+
+              <Route
+                path="payments"
+                element={
+                  <RoleProtectedRoute allow={['admin', 'vendedor', 'tesouraria']}>
+                    <Payments />
                   </RoleProtectedRoute>
                 }
               />

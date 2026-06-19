@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../firebase/AuthContext';
 import { useUserRole } from '../hooks/useUserRole';
@@ -9,6 +9,9 @@ import OfflineIndicator from './OfflineIndicator';
 import SafeIcon from './SafeIcon';
 import { usePreloadComponents } from '../hooks/usePreloadComponents';
 import { APP_NAME, appPath } from '../constants/app';
+import { toast } from 'react-toastify';
+import { paymentsAPI } from '../services/paymentsAPI';
+import { parseDateOnly } from '../utils/dateOnly';
 import {
   HomeIcon,
   CurrencyDollarIcon,
@@ -23,6 +26,7 @@ import {
   ClipboardDocumentListIcon,
   ShoppingCartIcon,
   PlusCircleIcon,
+  CreditCardIcon,
 } from '@heroicons/react/24/outline';
 
 interface NavLink {
@@ -51,6 +55,61 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   usePreloadComponents();
 
+  useEffect(() => {
+    if (!user) return;
+
+    const checkPendingPayments = async () => {
+      try {
+        const list = await paymentsAPI.getAll();
+        const pending = list.filter(p => p.status === 'pending');
+        
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
+
+        const dueToday: string[] = [];
+        const dueTomorrow: string[] = [];
+
+        const formatCurrency = (val: number) => {
+          return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        };
+
+        pending.forEach(p => {
+          const dt = parseDateOnly(p.due_date);
+          if (Number.isNaN(dt.getTime())) return;
+          
+          if (dt.getTime() === today.getTime()) {
+            dueToday.push(`${p.description} (${formatCurrency(p.value)})`);
+          } else if (dt.getTime() === tomorrow.getTime()) {
+            dueTomorrow.push(`${p.description} (${formatCurrency(p.value)})`);
+          }
+        });
+
+        if (dueToday.length > 0) {
+          toast.warning(
+            `⚠️ Conta(s) vencendo hoje:\n${dueToday.join('\n')}`, 
+            { autoClose: 10000, position: 'top-right' }
+          );
+        }
+        if (dueTomorrow.length > 0) {
+          toast.info(
+            `⏰ Conta(s) vencendo amanhã:\n${dueTomorrow.join('\n')}`, 
+            { autoClose: 10000, position: 'top-right' }
+          );
+        }
+      } catch (error) {
+        console.error('Erro ao verificar alertas de pagamentos:', error);
+      }
+    };
+
+    // Pequeno atraso para não competir com outros carregamentos iniciais
+    const timer = setTimeout(checkPendingPayments, 2000);
+    return () => clearTimeout(timer);
+  }, [user]);
+
   const canManage = isAdmin || isTesouraria || isVendedor;
 
   const navigation: NavItem[] = [
@@ -64,6 +123,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           { type: 'link', name: 'Produtos', href: appPath('products'), icon: CubeIcon },
           { type: 'link', name: 'Categorias', href: appPath('categories'), icon: TagIcon },
           { type: 'link', name: 'Fiados', href: appPath('fiados'), icon: ClipboardDocumentListIcon },
+          { type: 'link', name: 'Controle de Pagamentos', href: appPath('payments'), icon: CreditCardIcon },
           { type: 'link', name: 'Lista de Compras', href: appPath('compras'), icon: ShoppingCartIcon },
           { type: 'link', name: 'Lista de Feira', href: appPath('lista-manual'), icon: PlusCircleIcon },
         ] as NavItem[])
