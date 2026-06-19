@@ -110,7 +110,7 @@ export default function PaymentsPage() {
       value: val,
       due_date: form.due_date,
       status: form.status,
-      payment_date: form.status === 'paid' ? (form.payment_date || getTodayStr()) : undefined,
+      payment_date: form.status === 'paid' ? (form.payment_date || getTodayStr()) : null,
       notes: form.notes.trim(),
     };
 

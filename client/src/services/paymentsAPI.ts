@@ -20,7 +20,7 @@ export interface Payment {
   value: number;
   due_date: string; // YYYY-MM-DD
   status: 'pending' | 'paid';
-  payment_date?: string; // YYYY-MM-DD
+  payment_date?: string | null; // YYYY-MM-DD
   notes?: string;
   created_at: any;
   updated_at: any;

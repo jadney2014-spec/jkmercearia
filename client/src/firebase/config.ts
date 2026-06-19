@@ -1,6 +1,6 @@
 import { getApps, getApp, initializeApp } from 'firebase/app';
 import { browserLocalPersistence, getAuth, setPersistence } from 'firebase/auth';
-import { getFirestore, enableMultiTabIndexedDbPersistence } from 'firebase/firestore';
+import { getFirestore, initializeFirestore, enableMultiTabIndexedDbPersistence } from 'firebase/firestore';
 import { getFunctions } from 'firebase/functions';
 import { getStorage } from 'firebase/storage';
 import { getAnalytics, isSupported, Analytics } from 'firebase/analytics';
@@ -68,7 +68,9 @@ const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 
 // Exportar serviços
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const db = initializeFirestore(app, {
+  ignoreUndefinedProperties: true
+});
 export const functions = getFunctions(app);
 export const firebaseStorage = getStorage(app);
 
