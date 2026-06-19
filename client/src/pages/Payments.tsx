@@ -126,6 +126,7 @@ export default function PaymentsPage() {
       setShowModal(false);
       await loadData();
     } catch (error) {
+      console.error('Erro detalhado ao salvar pagamento:', error);
       toast.error('Erro ao salvar pagamento');
     } finally {
       setSaving(false);

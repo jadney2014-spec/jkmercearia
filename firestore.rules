@@ -35,6 +35,11 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
+    // Controle de Pagamentos
+    match /payments/{paymentId} {
+      allow read, write: if isSignedIn();
+    }
+
     // Apenas usuários autenticados podem acessar o restante do banco
     match /{document=**} {
       allow read, write: if isSignedIn();

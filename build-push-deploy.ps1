@@ -1,5 +1,5 @@
 # Build + GitHub push + Firebase Hosting (somente hosting)
-# Repositório: https://github.com/84159331/jkmercearia
+# Repositorio: https://github.com/84159331/jkmercearia
 # Firebase: jkmercearia-2865
 
 $ErrorActionPreference = "Stop"
@@ -9,11 +9,11 @@ $RemoteUrl = "https://github.com/84159331/jkmercearia.git"
 
 Write-Host "`n=== JK Mercearia: Build + GitHub + Firebase Hosting ===" -ForegroundColor Cyan
 
-# --- 1. Dependências + Build ---
-Write-Host "`n[1/4] Instalando dependências e build do frontend..." -ForegroundColor Yellow
+# --- 1. Dependencias + Build ---
+Write-Host "`n[1/4] Instalando dependencias e build do frontend..." -ForegroundColor Yellow
 
 if (-not (Test-Path (Join-Path $Root "node_modules"))) {
-    Write-Host "Instalando dependências da raiz..." -ForegroundColor Gray
+    Write-Host "Instalando dependencias da raiz..." -ForegroundColor Gray
     Set-Location $Root
     npm install
 }
@@ -21,7 +21,7 @@ if (-not (Test-Path (Join-Path $Root "node_modules"))) {
 Set-Location $Client
 
 if (-not (Test-Path "node_modules")) {
-    Write-Host "Instalando dependências do client..." -ForegroundColor Gray
+    Write-Host "Instalando dependencias do client..." -ForegroundColor Gray
     npm install
 }
 
@@ -32,7 +32,7 @@ if (Test-Path "build") {
 npm run build
 
 if (-not (Test-Path "build\index.html")) {
-    Write-Host "ERRO: Build falhou — client/build/index.html não encontrado." -ForegroundColor Red
+    Write-Host "ERRO: Build falhou - client/build/index.html nao encontrado." -ForegroundColor Red
     exit 1
 }
 
@@ -44,7 +44,7 @@ Write-Host "`n[2/4] Git (commit + push)..." -ForegroundColor Yellow
 Set-Location $Root
 
 if (-not (Test-Path ".git")) {
-    Write-Host "Inicializando repositório Git..." -ForegroundColor Gray
+    Write-Host "Inicializando repositorio Git..." -ForegroundColor Gray
     git init
     git branch -M main
 }
@@ -64,16 +64,10 @@ if ($remotes -notcontains "origin") {
 git add -A
 $status = git status --porcelain
 if ($status) {
-    git commit -m @"
-Atualiza JK Mercearia: importação de produtos, preços e deploy hosting.
-
-- Importação de planilha Excel com categorias
-- Campos valor pago e valor de venda nos produtos
-- Busca aprimorada de produtos
-"@
+    git commit -m "Atualiza JK Mercearia: importacao de produtos, precos, controle de pagamentos e deploy hosting."
     Write-Host "Commit criado." -ForegroundColor Green
 } else {
-    Write-Host "Nenhuma alteração para commitar." -ForegroundColor Gray
+    Write-Host "Nenhuma alteracao para commitar." -ForegroundColor Gray
 }
 
 Write-Host "Enviando para GitHub..." -ForegroundColor Gray
@@ -94,7 +88,7 @@ Write-Host "`n[3/4] Deploy Firebase (somente hosting)..." -ForegroundColor Yello
 
 $firebaseCmd = Get-Command firebase -ErrorAction SilentlyContinue
 if (-not $firebaseCmd) {
-    Write-Host "Firebase CLI não encontrada. Instale com: npm install -g firebase-tools" -ForegroundColor Red
+    Write-Host "Firebase CLI nao encontrada. Instale com: npm install -g firebase-tools" -ForegroundColor Red
     exit 1
 }
 
@@ -105,7 +99,7 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-Write-Host "`n[4/4] Concluído!" -ForegroundColor Green
+Write-Host "`n[4/4] Concluido!" -ForegroundColor Green
 Write-Host "  GitHub:  https://github.com/84159331/jkmercearia" -ForegroundColor Cyan
 Write-Host "  Site:    https://jkmercearia-2865.web.app" -ForegroundColor Cyan
 Write-Host "  Alt:     https://jkmercearia-2865.firebaseapp.com" -ForegroundColor Cyan
