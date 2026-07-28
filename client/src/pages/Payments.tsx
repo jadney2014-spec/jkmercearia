@@ -29,7 +29,7 @@ export default function PaymentsPage() {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'paid' | 'overdue'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'paid' | 'overdue'>('pending');
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<Payment | null>(null);
   const [form, setForm] = useState(initialForm);
@@ -221,9 +221,9 @@ export default function PaymentsPage() {
     const overdue = !isPaid && isOverdue(p.due_date);
 
     if (activeTab === 'paid') return isPaid;
-    if (activeTab === 'pending') return !isPaid && !overdue;
+    if (activeTab === 'pending') return !isPaid; // A Pagar: todos não pagos (pendentes + atrasados)
     if (activeTab === 'overdue') return overdue;
-    return true; // 'all'
+    return true; // 'all' (Todos)
   });
 
   if (loading) return <LoadingSpinner />;
@@ -332,16 +332,6 @@ export default function PaymentsPage() {
         {/* Abas */}
         <div className="flex border-b border-gray-200 dark:border-gray-700 gap-4 overflow-x-auto">
           <button
-            onClick={() => setActiveTab('all')}
-            className={`pb-2.5 px-2 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${
-              activeTab === 'all'
-                ? 'border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-500'
-                : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
-            }`}
-          >
-            Todos ({payments.length})
-          </button>
-          <button
             onClick={() => setActiveTab('pending')}
             className={`pb-2.5 px-2 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${
               activeTab === 'pending'
@@ -349,7 +339,7 @@ export default function PaymentsPage() {
                 : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
             }`}
           >
-            Pendentes ({stats.pendingCount})
+            A Pagar ({stats.pendingCount + stats.overdueCount})
           </button>
           <button
             onClick={() => setActiveTab('overdue')}
@@ -370,6 +360,16 @@ export default function PaymentsPage() {
             }`}
           >
             Pagos ({stats.paidCount})
+          </button>
+          <button
+            onClick={() => setActiveTab('all')}
+            className={`pb-2.5 px-2 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${
+              activeTab === 'all'
+                ? 'border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-500'
+                : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+            }`}
+          >
+            Todos ({payments.length})
           </button>
         </div>
       </div>
@@ -608,32 +608,49 @@ export default function PaymentsPage() {
       {/* Modal de Confirmação de Pagamento */}
       {payingPayment && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fade-in">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto animate-scale-in border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto animate-scale-in border border-gray-100 dark:border-gray-700">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-5 pb-3 border-b border-gray-100 dark:border-gray-700">
               <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                 <CheckCircleIcon className="h-6 w-6 text-green-600 dark:text-green-400" />
                 Confirmar Pagamento
               </h2>
               <button
                 onClick={() => setPayingPayment(null)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
               >
                 <XMarkIcon className="h-6 w-6" />
               </button>
             </div>
 
-            <div className="mb-4 bg-gray-50 dark:bg-gray-800/45 p-3 rounded-lg border border-gray-100 dark:border-gray-700/60 text-sm">
-              <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider">Fornecedor / Descrição</p>
-              <p className="font-bold text-gray-900 dark:text-white text-base mt-0.5">{payingPayment.description}</p>
+            {/* Recibo/Cupom do Boleto */}
+            <div className="mb-6 relative overflow-hidden rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800/80 dark:to-gray-800/40 p-5 border border-gray-100 dark:border-gray-700/60 shadow-inner">
+              {/* Círculos laterais para simular ticket */}
+              <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white dark:bg-gray-800 border-r border-gray-100 dark:border-gray-700/60"></div>
+              <div className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white dark:bg-gray-800 border-l border-gray-100 dark:border-gray-700/60"></div>
               
-              <div className="flex justify-between mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+              <div className="text-center pb-3 border-b border-dashed border-gray-200 dark:border-gray-700">
+                <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
+                  Valor do Boleto
+                </span>
+                <h3 className="text-3xl font-black text-gray-900 dark:text-white mt-1 select-all">
+                  {formatCurrency(payingPayment.value)}
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 pt-3.5 text-sm">
                 <div>
-                  <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider">Vencimento</p>
-                  <p className="font-semibold text-gray-800 dark:text-gray-200 mt-0.5">{formatDateOnlyPtBr(payingPayment.due_date)}</p>
+                  <p className="text-gray-400 dark:text-gray-500 text-xs font-bold uppercase tracking-wider">Fornecedor / Descrição</p>
+                  <p className="font-bold text-gray-800 dark:text-gray-200 mt-0.5 truncate" title={payingPayment.description}>
+                    {payingPayment.description}
+                  </p>
                 </div>
-                <div className="text-right">
-                  <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider">Valor do Boleto</p>
-                  <p className="font-black text-gray-900 dark:text-white text-base mt-0.5">{formatCurrency(payingPayment.value)}</p>
+                <div>
+                  <p className="text-gray-400 dark:text-gray-500 text-xs font-bold uppercase tracking-wider">Vencimento original</p>
+                  <p className="font-semibold text-gray-700 dark:text-gray-300 mt-0.5 flex items-center gap-1">
+                    <CalendarIcon className="h-4 w-4 text-red-500 shrink-0" />
+                    {formatDateOnlyPtBr(payingPayment.due_date)}
+                  </p>
                 </div>
               </div>
             </div>
@@ -641,21 +658,32 @@ export default function PaymentsPage() {
             <form onSubmit={handleConfirmPayment} className="space-y-4">
               {/* Data de Pagamento */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5 flex items-center gap-1">
+                  <CalendarIcon className="h-4 w-4 text-blue-500 shrink-0" />
                   Data do Pagamento *
                 </label>
-                <input
-                  type="date"
-                  value={paymentDate}
-                  onChange={(e) => setPaymentDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                  required
-                />
+                <div className="relative">
+                  <input
+                    type="date"
+                    value={paymentDate}
+                    onChange={(e) => setPaymentDate(e.target.value)}
+                    className="w-full pl-3 pr-20 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-medium transition-all"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setPaymentDate(getTodayStr())}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 px-2.5 py-1 text-xs font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/30 rounded-md transition-all active:scale-95"
+                  >
+                    Hoje
+                  </button>
+                </div>
               </div>
 
               {/* Observações do Pagamento */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5 flex items-center gap-1">
+                  <DocumentTextIcon className="h-4 w-4 text-purple-500 shrink-0" />
                   Comprovante / Notas de Pagamento
                 </label>
                 <textarea
@@ -663,7 +691,7 @@ export default function PaymentsPage() {
                   value={paymentNotes}
                   onChange={(e) => setPaymentNotes(e.target.value)}
                   rows={2}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all resize-none"
                 />
               </div>
 
@@ -672,16 +700,23 @@ export default function PaymentsPage() {
                 <button
                   type="button"
                   onClick={() => setPayingPayment(null)}
-                  className="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-semibold"
+                  className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-bold text-sm transition-all"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex-1 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 font-semibold shadow-md active:scale-95"
+                  className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 font-bold shadow-md hover:shadow-lg active:scale-95 text-sm transition-all flex items-center justify-center gap-2"
                 >
-                  {saving ? 'Registrando...' : 'Confirmar Pagamento'}
+                  {saving ? (
+                    'Registrando...'
+                  ) : (
+                    <>
+                      <CheckIcon className="h-5 w-5 stroke-[3]" />
+                      Confirmar Pagamento
+                    </>
+                  )}
                 </button>
               </div>
             </form>
