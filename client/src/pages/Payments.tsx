@@ -35,6 +35,11 @@ export default function PaymentsPage() {
   const [form, setForm] = useState(initialForm);
   const [saving, setSaving] = useState(false);
 
+  // Confirmação de Pagamento
+  const [payingPayment, setPayingPayment] = useState<Payment | null>(null);
+  const [paymentDate, setPaymentDate] = useState('');
+  const [paymentNotes, setPaymentNotes] = useState('');
+
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
@@ -144,17 +149,36 @@ export default function PaymentsPage() {
     }
   };
 
-  const handleQuickPay = async (payment: Payment) => {
+  const handleOpenQuickPay = (payment: Payment) => {
+    setPayingPayment(payment);
+    setPaymentDate(getTodayStr());
+    setPaymentNotes('');
+  };
+
+  const handleConfirmPayment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!payingPayment) return;
+
     try {
-      const todayStr = getTodayStr();
-      await paymentsAPI.update(payment.id, {
+      setSaving(true);
+      const combinedNotes = paymentNotes.trim()
+        ? (payingPayment.notes
+          ? `${payingPayment.notes}\n[Pgto em ${formatDateOnlyPtBr(paymentDate)}: ${paymentNotes.trim()}]`
+          : `[Pgto em ${formatDateOnlyPtBr(paymentDate)}: ${paymentNotes.trim()}]`)
+        : (payingPayment.notes || '');
+
+      await paymentsAPI.update(payingPayment.id, {
         status: 'paid',
-        payment_date: todayStr,
+        payment_date: paymentDate,
+        notes: combinedNotes,
       });
-      toast.success(`Pagamento "${payment.description}" marcado como PAGO!`);
+      toast.success(`Pagamento "${payingPayment.description}" marcado como PAGO!`);
+      setPayingPayment(null);
       await loadData();
     } catch (error) {
       toast.error('Erro ao registrar pagamento');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -421,11 +445,11 @@ export default function PaymentsPage() {
                       <div className="flex items-center justify-center gap-2">
                         {!isPaid && (
                           <button
-                            onClick={() => handleQuickPay(item)}
+                            onClick={() => handleOpenQuickPay(item)}
                             className="p-1.5 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-md transition-colors"
-                            title="Marcar como Pago hoje"
+                            title="Marcar como Pago"
                           >
-                            <CheckIcon className="h-4.5 w-4.5 stroke-[2.5]" />
+                            <CheckIcon className="h-5 w-5 stroke-[2.5]" />
                           </button>
                         )}
                         <button
@@ -433,14 +457,14 @@ export default function PaymentsPage() {
                           className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors"
                           title="Editar"
                         >
-                          <PencilSquareIcon className="h-4.5 w-4.5" />
+                          <PencilSquareIcon className="h-5 w-5" />
                         </button>
                         <button
                           onClick={() => handleDelete(item.id)}
                           className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
                           title="Excluir"
                         >
-                          <TrashIcon className="h-4.5 w-4.5" />
+                          <TrashIcon className="h-5 w-5" />
                         </button>
                       </div>
                     </td>
@@ -574,6 +598,90 @@ export default function PaymentsPage() {
                   className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 font-semibold shadow-md active:scale-95"
                 >
                   {saving ? 'Salvando...' : 'Salvar'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Confirmação de Pagamento */}
+      {payingPayment && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fade-in">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto animate-scale-in border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100 dark:border-gray-700">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <CheckCircleIcon className="h-6 w-6 text-green-600 dark:text-green-400" />
+                Confirmar Pagamento
+              </h2>
+              <button
+                onClick={() => setPayingPayment(null)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+              >
+                <XMarkIcon className="h-6 w-6" />
+              </button>
+            </div>
+
+            <div className="mb-4 bg-gray-50 dark:bg-gray-800/45 p-3 rounded-lg border border-gray-100 dark:border-gray-700/60 text-sm">
+              <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider">Fornecedor / Descrição</p>
+              <p className="font-bold text-gray-900 dark:text-white text-base mt-0.5">{payingPayment.description}</p>
+              
+              <div className="flex justify-between mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                <div>
+                  <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider">Vencimento</p>
+                  <p className="font-semibold text-gray-800 dark:text-gray-200 mt-0.5">{formatDateOnlyPtBr(payingPayment.due_date)}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider">Valor do Boleto</p>
+                  <p className="font-black text-gray-900 dark:text-white text-base mt-0.5">{formatCurrency(payingPayment.value)}</p>
+                </div>
+              </div>
+            </div>
+
+            <form onSubmit={handleConfirmPayment} className="space-y-4">
+              {/* Data de Pagamento */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                  Data do Pagamento *
+                </label>
+                <input
+                  type="date"
+                  value={paymentDate}
+                  onChange={(e) => setPaymentDate(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+                  required
+                />
+              </div>
+
+              {/* Observações do Pagamento */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                  Comprovante / Notas de Pagamento
+                </label>
+                <textarea
+                  placeholder="Ex: Pago via PIX pelo banco Itaú, chave CNPJ..."
+                  value={paymentNotes}
+                  onChange={(e) => setPaymentNotes(e.target.value)}
+                  rows={2}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+              </div>
+
+              {/* Botões */}
+              <div className="flex gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
+                <button
+                  type="button"
+                  onClick={() => setPayingPayment(null)}
+                  className="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-semibold"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="flex-1 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 font-semibold shadow-md active:scale-95"
+                >
+                  {saving ? 'Registrando...' : 'Confirmar Pagamento'}
                 </button>
               </div>
             </form>
