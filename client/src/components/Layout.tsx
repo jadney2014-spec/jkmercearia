@@ -11,6 +11,7 @@ import { usePreloadComponents } from '../hooks/usePreloadComponents';
 import { APP_NAME, appPath } from '../constants/app';
 import { toast } from 'react-toastify';
 import { paymentsAPI } from '../services/paymentsAPI';
+import { savingsAPI } from '../services/savingsAPI';
 import { parseDateOnly } from '../utils/dateOnly';
 import {
   HomeIcon,
@@ -106,8 +107,66 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       }
     };
 
+    const checkPendingSavings = async () => {
+      try {
+        const goalsList = await savingsAPI.getAll();
+        const activeGoals = goalsList.filter(g => g.status === 'active');
+        
+        const today = new Date();
+        const y = today.getFullYear();
+        const m = String(today.getMonth() + 1).padStart(2, '0');
+        const d = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${y}-${m}-${d}`;
+        const todayDt = new Date(y, today.getMonth(), today.getDate());
+
+        const pendingTitles: string[] = [];
+
+        activeGoals.forEach(goal => {
+          const startDt = parseDateOnly(goal.startDate);
+          if (Number.isNaN(startDt.getTime())) return;
+          
+          const timeDiff = todayDt.getTime() - startDt.getTime();
+          if (timeDiff < 0) return; // A meta ainda não começou
+          
+          const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+          
+          // Verifica se hoje é dia de aporte com base no intervalo
+          if (daysDiff % goal.intervalDays !== 0) return;
+
+          const isFixedTarget = !!goal.targetValue;
+          if (isFixedTarget && goal.targetValue) {
+            const numSlots = Math.ceil(goal.targetValue / goal.amountPerInterval);
+            const slotIndex = Math.floor(daysDiff / goal.intervalDays);
+            if (slotIndex >= numSlots) return; // Já concluiu todas as parcelas planejadas
+
+            const slotKey = `slot_${slotIndex}`;
+            if (!goal.completions[slotKey]?.completed) {
+              pendingTitles.push(goal.title);
+            }
+          } else {
+            // Meta contínua
+            if (!goal.completions[todayStr]?.completed) {
+              pendingTitles.push(goal.title);
+            }
+          }
+        });
+
+        if (pendingTitles.length > 0) {
+          toast.info(
+            `💰 Ei rapaz, não deixe de separar o dinheiro de hoje para as metas: ${pendingTitles.join(', ')}!`, 
+            { autoClose: 15000, position: 'top-right' }
+          );
+        }
+      } catch (error) {
+        console.error('Erro ao verificar alertas de poupança:', error);
+      }
+    };
+
     // Pequeno atraso para não competir com outros carregamentos iniciais
-    const timer = setTimeout(checkPendingPayments, 2000);
+    const timer = setTimeout(() => {
+      checkPendingPayments();
+      checkPendingSavings();
+    }, 2000);
     return () => clearTimeout(timer);
   }, [user]);
 
