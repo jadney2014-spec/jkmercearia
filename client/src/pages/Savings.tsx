@@ -474,14 +474,14 @@ export default function SavingsPage() {
                         className="p-1 text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 rounded-md transition-colors"
                         title="Editar"
                       >
-                        <PencilSquareIcon className="h-4.5 w-4.5" />
+                        <PencilSquareIcon className="h-5 w-5" />
                       </button>
                       <button
                         onClick={(e) => handleDelete(item.id, e)}
                         className="p-1 text-gray-400 hover:text-red-500 dark:hover:text-red-400 rounded-md transition-colors"
                         title="Excluir"
                       >
-                        <TrashIcon className="h-4.5 w-4.5" />
+                        <TrashIcon className="h-5 w-5" />
                       </button>
                     </div>
                   </div>
@@ -590,41 +590,35 @@ export default function SavingsPage() {
           {/* Grid de Tarefas/Slots */}
           <div>
             <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-1.5">
-              <CalendarIcon className="h-4.5 w-4.5 text-blue-500" />
+              <CalendarIcon className="h-5 w-5 text-blue-500" />
               Checklist de Depósitos
             </h3>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            <div className="flex flex-wrap gap-3">
               {detailSlots.map((slot, idx) => {
                 const theme = colorThemes[selectedGoal.color];
                 return (
                   <div
                     key={slot.key}
                     onClick={() => handleToggleSlot(selectedGoal, slot.key, slot.dateStr, slot.value)}
-                    className={`flex flex-col justify-between p-3.5 rounded-xl border cursor-pointer select-none transition-all duration-200 active:scale-95 ${
+                    className={`group relative flex items-center justify-center w-12 h-12 rounded-full border text-xs font-black transition-all duration-200 active:scale-90 cursor-pointer select-none ${
                       slot.completed
-                        ? `${theme.bg} ${theme.border} text-gray-900 dark:text-white`
-                        : 'bg-white dark:bg-gray-850 border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-700'
+                        ? `${theme.bg} ${theme.border} ${theme.text} scale-105 shadow-sm`
+                        : 'border-gray-200 dark:border-gray-800 text-gray-400 dark:text-gray-500 hover:border-gray-350 dark:hover:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50'
                     }`}
                   >
-                    <div className="flex items-center justify-between gap-1 mb-2">
-                      <span className="text-[10px] font-bold uppercase tracking-wider opacity-60">
-                        {slot.label}
-                      </span>
-                      {slot.completed ? (
-                        <CheckIcon className={`h-4.5 w-4.5 stroke-[3.5] ${theme.text}`} />
-                      ) : (
-                        <div className="h-4.5 w-4.5 rounded-full border border-gray-300 dark:border-gray-600 shrink-0" />
-                      )}
-                    </div>
-
-                    <div className="space-y-1">
-                      <p className="text-xs font-bold opacity-80">
-                        {formatDateOnlyPtBr(slot.dateStr)}
-                      </p>
-                      <p className={`text-sm font-extrabold ${slot.completed ? theme.text : 'text-gray-900 dark:text-white'}`}>
-                        {formatCurrency(slot.value)}
-                      </p>
+                    {slot.completed ? (
+                      <CheckIcon className="h-5 w-5 stroke-[3]" />
+                    ) : (
+                      <span>{String(idx + 1).padStart(2, '0')}</span>
+                    )}
+                    
+                    {/* Tooltip moderno e minimalista */}
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-10 w-28 bg-gray-950/95 dark:bg-gray-800/95 backdrop-blur-xs text-white text-[10px] text-center rounded-lg p-2 shadow-lg border border-gray-800 dark:border-gray-700 pointer-events-none">
+                      <p className="font-bold">{slot.label}</p>
+                      <p className="opacity-75">{formatDateOnlyPtBr(slot.dateStr)}</p>
+                      <p className="text-emerald-400 font-extrabold">{formatCurrency(slot.value)}</p>
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-4 border-t-gray-950 dark:border-t-gray-800"></div>
                     </div>
                   </div>
                 );
