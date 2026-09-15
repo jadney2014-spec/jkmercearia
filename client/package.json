@@ -39,7 +39,7 @@
     "@capacitor/push-notifications": "^7.0.3",
     "@dataconnect/generated": "file:src/dataconnect-generated",
     "@heroicons/react": "^2.0.18",
-    "@types/moment": "^2.11.29",
+    "@types/moment": "^2.13.0",
     "@types/node": "^16.18.68",
     "@types/react": "^18.2.66",
     "@types/react-big-calendar": "^1.16.3",
