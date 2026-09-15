@@ -26,7 +26,7 @@
     "firebase-functions": "^6.4.0",
     "next": "^16.0.8",
     "onesignal-cordova-plugin": "^5.2.19",
-    "react": "^19.2.1",
+    "react": "^19.3.0",
     "react-dom": "^19.2.1"
   }
 }
