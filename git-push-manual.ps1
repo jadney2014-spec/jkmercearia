@@ -39,20 +39,14 @@ git status -sb
 
 $changes = git status --porcelain
 if (-not $changes) {
-    Write-Host "`nNenhuma alteração para enviar." -ForegroundColor Gray
-
-    $ahead = git rev-list --count "origin/$Branch..$Branch" 2>$null
-    if ($ahead -and [int]$ahead -gt 0) {
-        Write-Host "Há $ahead commit(s) local(is) ainda não enviado(s). Enviando..." -ForegroundColor Yellow
-        git push -u origin $Branch
-        if ($LASTEXITCODE -eq 0) {
-            Write-Host "`nPush concluído!" -ForegroundColor Green
-            Write-Host "  https://github.com/jadney2014-spec/jkmercearia" -ForegroundColor Cyan
-        }
-    } else {
-        Write-Host "Repositório já está sincronizado com o GitHub." -ForegroundColor Green
+    Write-Host "`nNenhuma alteração pendente de commit." -ForegroundColor Gray
+    Write-Host "Enviando branch $Branch para o GitHub..." -ForegroundColor Yellow
+    git push -u origin $Branch
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "`nPush concluído com sucesso!" -ForegroundColor Green
+        Write-Host "  https://github.com/jadney2014-spec/jkmercearia" -ForegroundColor Cyan
+        exit 0
     }
-    exit 0
 }
 
 if (-not $Message) {
