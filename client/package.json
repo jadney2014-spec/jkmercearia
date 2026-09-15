@@ -35,7 +35,7 @@
     "@capacitor/android": "^8.0.1",
     "@capacitor/app": "^8.0.0",
     "@capacitor/cli": "^8.0.1",
-    "@capacitor/core": "^8.0.1",
+    "@capacitor/core": "^8.5.2",
     "@capacitor/push-notifications": "^7.0.3",
     "@dataconnect/generated": "file:src/dataconnect-generated",
     "@heroicons/react": "^2.0.18",
