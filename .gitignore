@@ -6,7 +6,8 @@ client/node_modules/
 client/build/
 dist/
 
-# Firebase service account (nunca commitar)
+# Firebase
+.firebase/
 serviceAccountKey.json
 **/serviceAccountKey.json
 *firebase-adminsdk*.json

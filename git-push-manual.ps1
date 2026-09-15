@@ -1,5 +1,5 @@
 # Envia alterações manualmente para o GitHub (sem build nem deploy)
-# Repositório: https://github.com/84159331/jkmercearia
+# Repositório: https://github.com/jadney2014-spec/jkmercearia
 
 param(
     [string]$Message = ""
@@ -7,7 +7,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $Root = $PSScriptRoot
-$RemoteUrl = "https://github.com/84159331/jkmercearia.git"
+$RemoteUrl = "https://github.com/jadney2014-spec/jkmercearia.git"
 $Branch = "main"
 
 Write-Host "`n=== JK Mercearia — Push manual para GitHub ===" -ForegroundColor Cyan
@@ -47,7 +47,7 @@ if (-not $changes) {
         git push -u origin $Branch
         if ($LASTEXITCODE -eq 0) {
             Write-Host "`nPush concluído!" -ForegroundColor Green
-            Write-Host "  https://github.com/84159331/jkmercearia" -ForegroundColor Cyan
+            Write-Host "  https://github.com/jadney2014-spec/jkmercearia" -ForegroundColor Cyan
         }
     } else {
         Write-Host "Repositório já está sincronizado com o GitHub." -ForegroundColor Green
@@ -92,4 +92,4 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "`nPush concluído com sucesso!" -ForegroundColor Green
-Write-Host "  https://github.com/84159331/jkmercearia" -ForegroundColor Cyan
+Write-Host "  https://github.com/jadney2014-spec/jkmercearia" -ForegroundColor Cyan

@@ -12,7 +12,7 @@ $Root = $PSScriptRoot
 $Client = Join-Path $Root "client"
 $ConfigDir = Join-Path $Root "config"
 $LocalKeyPath = Join-Path $ConfigDir "serviceAccountKey.json"
-$RemoteUrl = "https://github.com/84159331/jkmercearia.git"
+$RemoteUrl = "https://github.com/jadney2014-spec/jkmercearia.git"
 $FirebaseProject = "jkmercearia-2865"
 $GhSecretName = "FIREBASE_SERVICE_ACCOUNT_JKMERCEARIA_2865"
 
@@ -111,7 +111,7 @@ if ($gh) {
     $auth = gh auth status 2>&1
     if ($LASTEXITCODE -eq 0) {
         Write-Host "Configurando secret no GitHub ($GhSecretName)..." -ForegroundColor Gray
-        gh secret set $GhSecretName --repo 84159331/jkmercearia < $LocalKeyPath
+        gh secret set $GhSecretName --repo jadney2014-spec/jkmercearia < $LocalKeyPath
         if ($LASTEXITCODE -eq 0) {
             Write-Host "Secret GitHub configurado." -ForegroundColor Green
         } else {
@@ -200,6 +200,6 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Step "[5/5] Concluído!"
-Write-Host "  GitHub:  https://github.com/84159331/jkmercearia" -ForegroundColor Cyan
+Write-Host "  GitHub:  https://github.com/jadney2014-spec/jkmercearia" -ForegroundColor Cyan
 Write-Host "  Site:    https://jkmercearia-2865.web.app" -ForegroundColor Cyan
 Write-Host "  CI/CD:   push na main dispara deploy automático (se secret OK)" -ForegroundColor Cyan

@@ -1,11 +1,11 @@
 # Build + GitHub push + Firebase Hosting (somente hosting)
-# Repositorio: https://github.com/84159331/jkmercearia
+# Repositorio: https://github.com/jadney2014-spec/jkmercearia
 # Firebase: jkmercearia-2865
 
 $ErrorActionPreference = "Stop"
 $Root = $PSScriptRoot
 $Client = Join-Path $Root "client"
-$RemoteUrl = "https://github.com/84159331/jkmercearia.git"
+$RemoteUrl = "https://github.com/jadney2014-spec/jkmercearia.git"
 
 Write-Host "`n=== JK Mercearia: Build + GitHub + Firebase Hosting ===" -ForegroundColor Cyan
 
@@ -100,6 +100,6 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "`n[4/4] Concluido!" -ForegroundColor Green
-Write-Host "  GitHub:  https://github.com/84159331/jkmercearia" -ForegroundColor Cyan
+Write-Host "  GitHub:  https://github.com/jadney2014-spec/jkmercearia" -ForegroundColor Cyan
 Write-Host "  Site:    https://jkmercearia-2865.web.app" -ForegroundColor Cyan
 Write-Host "  Alt:     https://jkmercearia-2865.firebaseapp.com" -ForegroundColor Cyan

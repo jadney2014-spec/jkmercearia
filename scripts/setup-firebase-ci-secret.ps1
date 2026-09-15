@@ -49,7 +49,7 @@ if (-not (Test-Path $KeyFile)) {
 }
 
 Write-Host "`nEnviando secret para o repositório GitHub..." -ForegroundColor Yellow
-gh secret set $SecretName --repo 84159331/jkmercearia < $KeyFile
+gh secret set $SecretName --repo jadney2014-spec/jkmercearia < $KeyFile
 
 Remove-Item -Force $KeyFile -ErrorAction SilentlyContinue
 Write-Host "`nSecret configurado. Deploy automático ativo ao dar push na branch main." -ForegroundColor Green

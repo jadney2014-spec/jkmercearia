@@ -1,9 +1,9 @@
 # Configura o Git local para push manual no GitHub
-# Repositório: https://github.com/84159331/jkmercearia
+# Repositório: https://github.com/jadney2014-spec/jkmercearia
 
 $ErrorActionPreference = "Stop"
 $Root = $PSScriptRoot
-$RemoteUrl = "https://github.com/84159331/jkmercearia.git"
+$RemoteUrl = "https://github.com/jadney2014-spec/jkmercearia.git"
 $Branch = "main"
 
 Write-Host "`n=== JK Mercearia — Configuração Git ===" -ForegroundColor Cyan
@@ -42,7 +42,7 @@ git branch -vv
 git config --local --list | Select-String "user\.|remote\.|branch\."
 
 Write-Host "`nGit pronto para push manual." -ForegroundColor Green
-Write-Host "  Repositório: https://github.com/84159331/jkmercearia" -ForegroundColor Cyan
+Write-Host "  Repositório: https://github.com/jadney2014-spec/jkmercearia" -ForegroundColor Cyan
 Write-Host "  Branch:      $Branch" -ForegroundColor Cyan
 Write-Host "`nPara enviar alterações:" -ForegroundColor Gray
 Write-Host "  .\git-push-manual.ps1" -ForegroundColor White

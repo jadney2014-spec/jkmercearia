@@ -1,5 +1,5 @@
 # Instala dependências (raiz + client) e valida o build
-# Repositório: https://github.com/84159331/jkmercearia
+# Repositório: https://github.com/jadney2014-spec/jkmercearia
 
 $ErrorActionPreference = "Stop"
 $Root = $PSScriptRoot
@@ -37,4 +37,4 @@ Set-Location $Root
 Write-Host "`nSetup concluído com sucesso!" -ForegroundColor Green
 Write-Host "  Desenvolvimento: npm start" -ForegroundColor Cyan
 Write-Host "  Deploy completo: npm run release" -ForegroundColor Cyan
-Write-Host "  GitHub:          https://github.com/84159331/jkmercearia" -ForegroundColor Cyan
+Write-Host "  GitHub:          https://github.com/jadney2014-spec/jkmercearia" -ForegroundColor Cyan
